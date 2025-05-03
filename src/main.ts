@@ -40,10 +40,10 @@ const calculateLoan = ({ amount, interestRate, years }: LoanDetails): PaymentDet
   const interest = total - principal;
 
   return {
-    monthlyPayment: Number(monthly.toFixed(2)),
-    monthlyInterest: Number(monthlyInterest.toFixed(2)),
-    totalInterest: Number(interest.toFixed(2)),
-    totalPayment: Number(total.toFixed(2))
+    monthlyPayment: parseFloat(monthly.toFixed(2)),
+    monthlyInterest: parseFloat(monthlyInterest.toFixed(2)),
+    totalInterest: parseFloat(interest.toFixed(2)),
+    totalPayment: parseFloat(total.toFixed(2))
   }
 }
 
@@ -53,15 +53,16 @@ const renderPage = (): void => {
 
     // define loan details object for user inputs
     const loanDetails: LoanDetails = {
-      amount: Number(loanAmountUserInput.value),
-      interestRate: Number(loanInterestUserInput.value),
-      years: Number(loanDurationUserInput.value)
+      amount: parseFloat(loanAmountUserInput.value),
+      interestRate: parseFloat(loanInterestUserInput.value),
+      years: parseInt(loanDurationUserInput.value, 10)
     }
 
+    //input validation
     const isValidInput =
-      isNaN(loanDetails.amount) && loanDetails.amount >= 500 &&
-      isNaN(loanDetails.interestRate) && loanDetails.interestRate > 0 &&
-      isNaN(loanDetails.years) && loanDetails.years > 0
+      !isNaN(loanDetails.amount) && loanDetails.amount >= 500 && loanDetails.amount !== null &&
+      !isNaN(loanDetails.interestRate) && loanDetails.interestRate > 0 && loanDetails.interestRate !== null &&
+      !isNaN(loanDetails.years) && loanDetails.years > 0 && loanDetails.years !== null;
 
     if(isValidInput) {
       console.log(calculateLoan(loanDetails));
