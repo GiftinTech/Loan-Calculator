@@ -7,7 +7,11 @@ const loanDurationUserInput = document.querySelector('.js-loan-duration') as HTM
 // button element
 const calculateLoanButton = document.querySelector('.js-calculate-loan') as HTMLButtonElement;
 
-// string literals type structure
+if (!loanAmountUserInput || !loanInterestUserInput || !loanDurationUserInput || !calculateLoanButton) {
+  throw new Error("One or more input elements are missing in the DOM.");
+}
+
+// string literals type definition
 type Loan = 'amount' | 'interestRate' | 'years';
 type Payment = 'monthlyPayment' | 'monthlyInterest' | 'totalInterest' | 'totalPayment';
 
@@ -16,20 +20,20 @@ type LoanDetails = {
   [L in Loan]: number
 }
 
-type paymentDetails = {
+type PaymentDetails = {
   [P in Payment]: number /* | string */
 }
 
 //console.log(loanDetails.amount);
 
 // preprocessing the data functionality
-const calculateLoan = ({ amount, interestRate, years }: LoanDetails): paymentDetails => {
+const calculateLoan = ({ amount, interestRate, years }: LoanDetails): PaymentDetails => {
   const principal = amount; 
   const calculatedInterest = interestRate / 100 / 12;
   const calculatedPayment = years * 12;
 
   const monthlyInterest = calculatedInterest * principal;
-  const interestGrowth = (1 + calculatedInterest) ** calculatedPayment;
+  const interestGrowth = Math.pow(1 + calculatedInterest, calculatedPayment);
   const monthly = (principal * interestGrowth * calculatedInterest) / (interestGrowth - 1);
 
   const total = monthly * calculatedPayment;
@@ -48,27 +52,24 @@ const renderPage = (): void => {
     e.preventDefault();
 
     // define loan details object for user inputs
-    const loanDetails = {
+    const loanDetails: LoanDetails = {
       amount: Number(loanAmountUserInput.value),
       interestRate: Number(loanInterestUserInput.value),
       years: Number(loanDurationUserInput.value)
     }
 
-    if(
-      loanDetails.amount >= 500 || !loanDetails.amount === null &&
-      loanDetails.interestRate > 0 || !loanDetails.interestRate === null &&
-      loanDetails.years > 0 || !loanDetails.years === null
-    ) {
-      console.log(calculateLoan({
-        amount: loanDetails.amount,
-        interestRate: loanDetails.interestRate,
-        years: loanDetails.years
-      }));
+    const isValidInput =
+      isNaN(loanDetails.amount) && loanDetails.amount >= 500 &&
+      isNaN(loanDetails.interestRate) && loanDetails.interestRate > 0 &&
+      isNaN(loanDetails.years) && loanDetails.years > 0
+
+    if(isValidInput) {
+      console.log(calculateLoan(loanDetails));
     } else {
       console.log('Invalid Input');
     }
   });
-}
+};
 
 renderPage();
 

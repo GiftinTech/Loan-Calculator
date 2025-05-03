@@ -10,18 +10,20 @@
   <link rel="stylesheet" href="/build/styles.css">
 </head>
 <body>
-  <label>
-    Principal:
-    <input type="number" id="number" class="loan-input js-loan-amount" placeholder="Enter your loan amount" required>
-  </label>
-  <label>
-    Interest:
-    <input type="number" id="number" class="loan-input js-loan-interest" placeholder="Enter your loan Interest per/anum" required>
-  </label>
-  <label>
-    Years:
-    <input type="number" id="number" class="loan-input js-loan-duration" placeholder="Enter your loan duration" required>
-  </label>
+  <form action="https://httpbin.org/get" method="get" name="loanDetailsForm">
+    <label>
+      Principal:
+      <input type="number" id="number" class="loan-input js-loan-amount" placeholder="Enter your loan amount" required>
+    </label>
+    <label>
+      Interest:
+      <input type="number" id="number" class="loan-input js-loan-interest" placeholder="Enter your loan Interest per/anum" required>
+    </label>
+    <label>
+      Years:
+      <input type="number" id="number" class="loan-input js-loan-duration" placeholder="Enter your loan duration" required>
+    </label>
+  </form>
   <button class="js-calculate-loan">Calculate</button>
   <script src="/build/js/main.js" defer></script>
 </body>
