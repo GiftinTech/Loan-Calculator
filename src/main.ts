@@ -13,7 +13,7 @@ if (!loanAmountUserInput || !loanInterestUserInput || !loanDurationUserInput || 
 
 // string literals type definition
 type Loan = 'amount' | 'interestRate' | 'years';
-type Payment = 'monthlyPayment' | 'monthlyInterest' | 'totalInterest' | 'totalPayment';
+/* type Payment = 'monthlyPayment' | 'monthlyInterest' | 'totalInterest' | 'totalPayment'; */
 
 // map through each item of the array 
 type LoanDetails = {
@@ -21,7 +21,8 @@ type LoanDetails = {
 }
 
 type PaymentDetails = {
-  [P in Payment]: number /* | string */
+  [key: string]: number;
+  //[P in Payment]: number 
 }
 
 //console.log(loanDetails.amount);
