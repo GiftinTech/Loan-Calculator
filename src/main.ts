@@ -5,7 +5,7 @@ const loanInterestUserInput = document.querySelector('.js-loan-interest') as HTM
 const loanDurationUserInput = document.querySelector('.js-loan-duration') as HTMLInputElement;
 
 // button element
-const calculateLoanButton = document.querySelector('.js-calculate-loan') as HTMLButtonElement;
+const calculateLoanButton = document.querySelector('.js-calculate-loan') as HTMLInputElement
 
 if (!loanAmountUserInput || !loanInterestUserInput || !loanDurationUserInput || !calculateLoanButton) {
   throw new Error("One or more input elements are missing in the DOM.");
@@ -67,10 +67,38 @@ const renderPage = (): void => {
     if(isValidInput) {
       console.log(calculateLoan(loanDetails));
     } else {
-      console.log('Invalid Input');
+      if (!MouseEvent) {
+        return;
+      } else {
+        console.log('Invalid Input');
+      }
     }
   });
 };
 
+const loanInputs: HTMLInputElement[] = [
+  loanAmountUserInput,
+  loanInterestUserInput,
+  loanDurationUserInput,
+  calculateLoanButton
+];
+
+loanInputs.forEach((input, index) => {
+  input.addEventListener('keyup', function (e: KeyboardEvent) {  
+    if (e.key === 'Enter' && this.value) {
+      e.preventDefault();
+
+      const nextInput = loanInputs[index + 1];
+      if (nextInput) {
+        nextInput.focus();
+      }
+    }
+  });
+});
+
+
+
+
 renderPage();
+
 

@@ -44,8 +44,30 @@ const renderPage = () => {
             console.log(calculateLoan(loanDetails));
         }
         else {
-            console.log('Invalid Input');
+            if (!MouseEvent) {
+                return;
+            }
+            else {
+                console.log('Invalid Input');
+            }
         }
     });
 };
+const loanInputs = [
+    loanAmountUserInput,
+    loanInterestUserInput,
+    loanDurationUserInput,
+    calculateLoanButton
+];
+loanInputs.forEach((input, index) => {
+    input.addEventListener('keyup', function (e) {
+        if (e.key === 'Enter' && this.value) {
+            e.preventDefault();
+            const nextInput = loanInputs[index + 1];
+            if (nextInput) {
+                nextInput.focus();
+            }
+        }
+    });
+});
 renderPage();

@@ -8,7 +8,7 @@
   <meta name="description" content="A simple loan calculator that shows monthly payments and an amortisation chart using HTML, CSS, JavaScript and TypeScript.">
   <title>Loan Calculator</title>
   <link rel="stylesheet" href="/build/styles.css">
-  <link rel="icon" href="/lc-favicon.png">
+  <link rel="icon" href="/build/lc-favicon.png">
 </head>
 
 <body>
@@ -25,8 +25,10 @@
       Years:
       <input type="number" id="number" class="loan-input js-loan-duration" placeholder="Enter your loan duration" required>
     </label>
+      <input class="loan-input calculate-loan js-calculate-loan" value="Calculate" type="submit">
+    </label>
   </form>
-  <button class="js-calculate-loan">Calculate</button>
+
   <script src="/build/js/main.js" defer></script>
 </body>
 </html>
