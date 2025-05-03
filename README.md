@@ -69,24 +69,30 @@ loan-calculator/
 git clone https://github.com/your-username/loan-calculator.git
 cd loan-calculator
 open index.html
+```
 
-💡 Future Improvements
+---
 
-- ✅ Add Chart.js for better chart visuals
+## 💡 Future Improvements
 
-- ✅ Input validation and error messages
+* ✅ Add Chart.js for better chart visuals
+* ✅ Input validation and error messages
+* ⏳ Save past calculations using localStorage
+* ⏳ Add dark mode toggle
 
-- ⏳ Save past calculations using localStorage
+---
 
-- ⏳ Add dark mode toggle
+## 🤝 Contributing
+Pull requests are welcome! Feel free to fork and submit a PR if you have suggestions or improvements.
 
-🤝 Contributing
-Pull requests are welcome! If you have suggestions or improvements, feel free to fork and submit a PR.
+---
 
-📜 License
+## 📜 License
 MIT
 
-👨‍💻 Author
+---
+
+## 👨‍💻 Author
 Built by GiftinTech — Frontend Developer and an aspiring full-stack developer.
 
 
