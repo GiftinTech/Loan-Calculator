@@ -14,17 +14,23 @@
 <body>
   <form action="https://httpbin.org/get" method="get" name="loanDetailsForm">
     <label>
-      Principal:
+      Loan Amount:
       <input type="number" id="number" class="loan-input js-loan-amount" placeholder="Enter your loan amount" required>
     </label>
     <label>
-      Interest:
+      Annual Interest Rate:
       <input type="number" id="number" class="loan-input js-loan-interest" placeholder="Enter your loan Interest per/anum" required>
     </label>
     <label>
-      Years:
+      Loan Duration:
       <input type="number" id="number" class="loan-input js-loan-duration" placeholder="Enter your loan duration" required>
     </label>
+    <label>
+      Start Date
+      <input type="date" name="date" id="date">
+    </label>
+
+    <label>
       <input class="loan-input calculate-loan js-calculate-loan" value="Calculate" type="submit">
     </label>
   </form>
