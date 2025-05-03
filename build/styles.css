@@ -1,0 +1,50 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* colours */
+  --PRIMARY: #2D6A4F; /* btns, active inputs, highlights */
+  --PRIMARY-HOVER: #22543D; /* btns hover effect */
+  --PRIMARY-ACTIVE: #1B4332; /* btns press, active selection */
+  --PRIMARY-DISABLED: #B7CDC2; /* disabled btns or inputs */
+  --SECONDARY: #95D5B2; /* progress bars, sliders, minor btns */
+
+  --SUCCESS: #40916C; /* form success */
+  --ERROR: #D00000; /* form validation, failed calculation, alerts */
+
+  --BACKGROUND: #F1F5F4; /* page background */
+  --INPUT-BACKGROUND: #FFFFFF; /* input fields, cards */
+
+  --MAIN-TEXT: #1B4332; /* main body, labels */
+  --MUTED-TEXT: #6C757D; /* placeholders */
+  --DISABLED-TEXT: #CED4DA; /* disabled label text */
+
+  --BORDER: #D8F3DC; /* input borders */
+  --BORDER-HOVER: #74C69D;
+
+  /* transition for hover/active */
+  --HOVER-STATE: 0.2s ease-in-out;
+
+  /* box-shadow for cards/modals */
+  --BOX-SHADOW: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0 auto;
+  padding: 300px 20px;
+}
+
+.loan-input {
+  padding: 15px;
+  margin-bottom: 20px;
+}
