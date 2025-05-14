@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap');
+
 *,
 *::before,
 *::after {
@@ -27,9 +29,6 @@
   --BORDER: #D8F3DC; /* input borders */
   --BORDER-HOVER: #74C69D;
 
-  /* transition for hover/active */
-  --HOVER-STATE: 0.2s ease-in-out;
-
   /* box-shadow for cards/modals */
   --BOX-SHADOW: 0 2px 8px rgba(0,0,0,0.05);
 }
@@ -41,16 +40,115 @@ html {
 
 body {
   margin: 0 auto;
-  padding: 100px 20px;
+  padding: 100px 20px 0;
+  background-color: var(--BORDER);
+  font-family: 'Roboto', sans-serif;
 }
 
-.loan-input {
-  padding: 15px;
-  margin-bottom: 20px;
+.loan-wrapper {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  max-width: 800px;
+  border: 2px solid var(--BORDER);
+  border-radius: 10px;
+  box-shadow: var(--BOX-SHADOW);
+  padding: 20px;
+  background-color: var(--BACKGROUND);
+}
+
+label, input {
+  display: block;
+  font-family: 'Inter', sans-serif;
+}
+
+label {
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.form-header {
+  font-size: 15px;
+  margin-bottom: 50px;
+}
+
+.loan-input:not(.calculate-loan) {
+  border-top: transparent;
+  border-left: transparent;
+  border-right: transparent;
+  background-color: var(--BACKGROUND);
+  margin-top: 15px;
+  width: 200px;
+}
+
+.loan-input:placeholder-shown {
+  font-size: 10px;
+  padding-bottom: 4px;
+}
+
+.loan-input:focus {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid;
+  box-shadow: none;
+}
+
+input[type="date"] {
+  background-color: var(--BACKGROUND);
+  padding: 2px 5px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  outline: none;
+  margin-top: 15px;
+}
+
+::-webkit-calendar-picker-indicator {
+  padding: 3px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.amount-input[type="number"]::-webkit-inner-spin-button,
+.amount-input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.amount-input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
 }
 
 .calculate-loan {
-  border: 1px solid #000;
-  border-radius: 10px;
-  padding: 10px;
+  border: 1px solid;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #fff;
+  background-color: var(--PRIMARY);
+  font-size: 12px;
+  font-weight: 500;
+  margin: 30px auto;
+  transform: translateX(70px);
+  cursor: pointer;
+}
+
+.calculate-loan:is(:hover, :focus) {
+  background-color: var(--PRIMARY-HOVER);
+  border-color: var(--BORDER-HOVER);
+
+}
+
+.chart-wrapper {
+  border: 2px solid black;
+  min-width: 240px;
+  height: 200px;
+}
+
+@media (min-width: 768px) {
+  .loan-wrapper {
+    padding: 20px 20px 20px 50px;
+  }
 }

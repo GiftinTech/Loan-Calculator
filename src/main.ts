@@ -1,3 +1,5 @@
+import { Chart } from 'chart.js/auto';
+
 // DOM
 // input elements
 const loanAmountUserInput = document.querySelector('.js-loan-amount') as HTMLInputElement;
@@ -22,7 +24,7 @@ type LoanDetails = {
 }
 
 type PaymentDetails = {
-  [key: string]: number;
+  [key: string]: number | Date;
   //[P in Payment]: number 
 }
 
@@ -85,12 +87,12 @@ const renderPage = (): void => {
     const startDateStr = loanStartDateInput.value;
 
     const { first, last } = calculatePaymentDates(startDateStr, years);
-    console.log('First Payment:', first.toDateString());
-    console.log('Last Payment:', last.toDateString());
+    console.log('First Payment:', first);
+    console.log('Last Payment:', last);
   });
 };
 
-const calculatePaymentDates = (startDateStr: string, years: number): { first: Date, last: Date } => {
+const calculatePaymentDates = (startDateStr: string, years: number): PaymentDetails => {
   const startDate = new Date(startDateStr);
 
   const firstPayment = new Date(startDate);
@@ -111,6 +113,8 @@ const loanInputs: HTMLInputElement[] = [
   loanDurationUserInput
 ];
 
+
+// use enter key to navigate only if there is a value in the input
 loanInputs.forEach((input, index) => {
   input.addEventListener('keyup', function (e) {  
     if (e.key === 'Enter' && this.value) {
@@ -124,6 +128,29 @@ loanInputs.forEach((input, index) => {
       }
     }
   });
+});
+
+// Display loan details in a chart
+
+const ctx = document.getElementById('myChart') as HTMLCanvasElement;
+
+new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    datasets: [{
+      label: '# of Votes',
+      data: [12, 19, 3, 5, 2, 3],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  }
 });
 
 renderPage();
