@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap');
 
 *,
 *::before,
@@ -42,7 +42,7 @@ body {
   margin: 0 auto;
   padding: 100px 20px 0;
   background-color: var(--BORDER);
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .loan-wrapper {
@@ -62,7 +62,7 @@ body {
 label,
 input {
   display: block;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 label {
@@ -76,7 +76,7 @@ label {
   margin-bottom: 50px;
 }
 
-.loan-input[type="number"] {
+.loan-input[type='number'] {
   border-top: transparent;
   border-left: transparent;
   border-right: transparent;
@@ -97,7 +97,7 @@ label {
   box-shadow: none;
 }
 
-input[type="date"] {
+input[type='date'] {
   background-color: var(--BACKGROUND);
   padding: 2px 5px;
   border: 1px solid #000;
@@ -112,13 +112,13 @@ input[type="date"] {
   border-radius: 3px;
 }
 
-.loan-input[type="number"]::-webkit-inner-spin-button,
-.loan-input[type="number"]::-webkit-outer-spin-button {
+.loan-input[type='number']::-webkit-inner-spin-button,
+.loan-input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.loan-input[type="number"] {
+.loan-input[type='number'] {
   appearance: textfield;
   -moz-appearance: textfield;
 }
@@ -145,22 +145,17 @@ input[type="date"] {
   border: 2px solid black;
   padding: 5px 25px;
   min-width: 240px;
-  height: 300px;
+  height: 500px;
+}
 
-  & #myChart {
-    margin-bottom: 10px;
-  }
+.chart-details p {
+  font-size: 13px;
+  font-weight: bold;
+}
 
-  & .chart-details p {
-    margin-top: 5px;
-    font-size: 13px;
-    font-weight: bold;
-  }
-
-  & .chart-details span {
-    font-size: 15px;
-    margin-left: 100px;
-  }
+.chart-details span {
+  font-size: 15px;
+  margin-left: 50px;
 }
 
 @media (min-width: 768px) {
