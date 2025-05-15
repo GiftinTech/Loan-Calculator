@@ -40,7 +40,15 @@ type LoanDetails = {
 };
 
 type PaymentDetails = {
-  [key: string]: number;
+  monthlyPayment: number;
+  monthlyInterest: number;
+  totalInterest: number;
+  totalPayment: number;
+  principal: number;
+  calculatedPayment: number;
+  calculatedInterest: number;
+  start: Date;
+  last: Date;
 };
 
 //console.log(loanDetails.amount);
@@ -89,7 +97,7 @@ const calculateLoan = ({
   amount,
   interestRate,
   years,
-}: LoanDetails): PaymentDetails => {
+}: LoanDetails): Omit<PaymentDetails, 'start' | 'last'> => {
   const principal: number = amount;
   const calculatedInterest = interestRate / 100 / 12;
   const calculatedPayment = years * 12;
@@ -216,7 +224,7 @@ const renderPage = (): void => {
     const calculatePaymentDates = (
       startDateStr: string,
       years: number
-    ): PaymentDetails => {
+    ): Pick<PaymentDetails, 'start' | 'last'> => {
       const startDate = new Date(startDateStr);
 
       const firstPayment = new Date(startDate);
@@ -226,13 +234,13 @@ const renderPage = (): void => {
       lastPayment.setMonth(lastPayment.getMonth() + years * 12);
 
       return {
-        first: firstPayment,
+        start: firstPayment,
         last: lastPayment,
       };
     };
 
-    const { first, last } = calculatePaymentDates(startDateStr, years);
-    console.log('First Payment:', first);
+    const { start, last } = calculatePaymentDates(startDateStr, years);
+    console.log('First Payment:', start);
     console.log('Last Payment:', last);
 
     // Navigate the input with keyboard
@@ -285,15 +293,12 @@ const calculateLoanNav = document.querySelector(
 const loanScheduleNav = document.querySelector(
   '.js-loan-schedule-nav'
 ) as HTMLLIElement;
+const summaryTable = document.querySelector('table') as HTMLTableElement;
 
 const summaryNavEvents = (): void => {
   if (!loanSummaryNav) return;
 
   loanSummaryNav.addEventListener('click', () => {
-    const summaryTable = document.querySelector(
-      'table'
-    ) as HTMLTableElement | null;
-
     if (!summaryTable) {
       console.error('table element not found.');
       return;
@@ -310,9 +315,10 @@ const calculateNavEvents = (): void => {
   if (!calculateLoanNav) return;
 
   calculateLoanNav.addEventListener('click', () => {
-    const isFormVisible = getComputedStyle(formElement).display === 'none';
-
-    formElement.style.display = isFormVisible ? 'block' : '';
+    if (getComputedStyle(summaryTable).display === 'block') {
+      formElement.style.display = 'block';
+      summaryTable.style.display = 'none';
+    }
   });
 };
 
