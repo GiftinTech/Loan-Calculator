@@ -40,9 +40,28 @@ html {
 
 body {
   margin: 0 auto;
-  padding: 100px 20px 0;
+  padding: 70px 20px 50px;
   background-color: var(--BORDER);
   font-family: 'Roboto', sans-serif;
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  margin: 5px 0 50px;
+}
+
+.nav-links li {
+  list-style: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  color: var(--MAIN-TEXT);
+  cursor: pointer;
+}
+
+.nav-links li:is(:hover, :focus) {
+  transform: scale(1.1);
 }
 
 .loan-wrapper {
@@ -72,17 +91,53 @@ label {
 }
 
 .form-header {
-  font-size: 15px;
-  margin-bottom: 50px;
+  font-size: 13px;
+  margin-bottom: 30px;
 }
 
-.loan-input[type='number'] {
+.amount-wrapper,
+.interest-wrapper,
+.duration-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.naira-symbol,
+.percentage-symbol,
+.years-symbol {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--MAIN-TEXT);
+  pointer-events: none;
+}
+
+.naira-symbol {
+  left: 0;
+}
+.percentage-symbol {
+  right: 5px;
+}
+.years-symbol {
+  right: 5px;
+  font-size: 10px;
+}
+
+.amount-input {
+  padding-left: 18px;
+}
+
+.loan-input[type='number'],
+.amount-input {
   border-top: transparent;
   border-left: transparent;
   border-right: transparent;
   background-color: var(--BACKGROUND);
   margin-top: 15px;
-  width: 200px;
+  width: 230px;
+  padding-bottom: 1px;
 }
 
 .loan-input:placeholder-shown {
@@ -132,7 +187,7 @@ input[type='date'] {
   font-size: 12px;
   font-weight: 500;
   margin: 30px auto;
-  transform: translateX(70px);
+  transform: translateX(80px);
   cursor: pointer;
 }
 
@@ -142,20 +197,64 @@ input[type='date'] {
 }
 
 .chart-wrapper {
-  border: 2px solid black;
-  padding: 5px 25px;
-  min-width: 240px;
-  height: 500px;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(211, 247, 227, 0.644);
+  width: 270px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  row-gap: 1.5rem;
+}
+
+.currency-choice {
+  color: #fff;
+  font-weight: bold;
+  font-size: 9px;
+  border: none;
+  border-radius: 6px;
+  background-color: #000;
+  padding: 4px 7px;
+  margin-top: 5px;
+  margin-right: 5px;
+  align-self: flex-end;
+  cursor: pointer;
+}
+
+.canvas-container {
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  padding: 5px 20px;
+}
+
+.chart-div-container {
+  padding: 0 10px 50px;
+}
+
+.chart-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 70px;
+  padding: 3px 0;
+}
+
+.chart-details:last-child {
+  border-top: 2px solid #0000008a;
+  margin-top: 5px;
+  padding-top: 5px;
 }
 
 .chart-details p {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: bold;
+  text-align: justify;
 }
 
 .chart-details span {
-  font-size: 15px;
-  margin-left: 50px;
+  font-size: 13px;
 }
 
 @media (min-width: 768px) {

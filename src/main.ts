@@ -1,33 +1,33 @@
 import { Chart } from 'chart.js/auto';
 
-let myChart;
+let myChart: Chart | null = null;
 
 // DOM
 // input elements
-const loanAmountUserInput = document.querySelector(
+const amountInput = document.querySelector(
   '.js-loan-amount'
 ) as HTMLInputElement;
-const loanInterestUserInput = document.querySelector(
+const interestInput = document.querySelector(
   '.js-loan-interest'
 ) as HTMLInputElement;
-const loanDurationUserInput = document.querySelector(
+const durationInput = document.querySelector(
   '.js-loan-duration'
 ) as HTMLInputElement;
-const loanStartDateInput = document.querySelector(
+const startDateInput = document.querySelector(
   '.js-loan-start-date'
 ) as HTMLInputElement;
 
 // button element
-const calculateLoanButton = document.querySelector(
+const calculateButton = document.querySelector(
   '.js-calculate-loan'
 ) as HTMLInputElement;
 
 if (
-  !loanAmountUserInput ||
-  !loanInterestUserInput ||
-  !loanDurationUserInput ||
-  !calculateLoanButton ||
-  !loanStartDateInput
+  !amountInput ||
+  !interestInput ||
+  !durationInput ||
+  !calculateButton ||
+  !startDateInput
 ) {
   throw new Error('One or more input elements are missing in the DOM.');
 }
@@ -40,10 +40,49 @@ type LoanDetails = {
 };
 
 type PaymentDetails = {
-  [key: string]: number | Date;
+  [key: string]: number;
 };
 
 //console.log(loanDetails.amount);
+
+// Utility function: formats figures with commas
+/** remove every comma before calculations */
+const stripCommas = (val: string) => val.replace(/,/g, '');
+
+function numberWithCommas(x: number | string) {
+  const parts = x.toString().split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
+}
+
+/* ---------- live formatting ---------- */
+amountInput.addEventListener('input', () => {
+  // caret position bookkeeping so typing feels natural
+  const start = amountInput.selectionStart ?? 0;
+
+  // raw numeric string without commas
+  const raw = stripCommas(amountInput.value);
+
+  // bail if user deleted everything
+  if (raw === '') {
+    amountInput.value = '';
+    return;
+  }
+
+  // format and re-set the value
+  amountInput.value = numberWithCommas(raw);
+
+  /* restore caret near the end; optional: smarter caret logic */
+  amountInput.setSelectionRange(
+    amountInput.value.length,
+    amountInput.value.length
+  );
+});
+
+/* optional: assure perfect formatting when user leaves field */
+amountInput.addEventListener('blur', () => {
+  amountInput.value = numberWithCommas(amountInput.value);
+}); // ChatGPT code
 
 // preprocessing the data functionality
 const calculateLoan = ({
@@ -51,7 +90,7 @@ const calculateLoan = ({
   interestRate,
   years,
 }: LoanDetails): PaymentDetails => {
-  const principal = amount;
+  const principal: number = amount;
   const calculatedInterest = interestRate / 100 / 12;
   const calculatedPayment = years * 12;
 
@@ -76,15 +115,15 @@ const calculateLoan = ({
 
 const renderPage = (): void => {
   const ctx = document.getElementById('myChart') as HTMLCanvasElement;
-  calculateLoanButton.addEventListener('click', (e) => {
+  calculateButton.addEventListener('click', (e) => {
     e.preventDefault();
 
     // define loan details object for user inputs
     const loanDetails: LoanDetails = {
-      amount: parseFloat(loanAmountUserInput.value),
-      interestRate: parseFloat(loanInterestUserInput.value),
-      years: parseInt(loanDurationUserInput.value, 10),
-      startDate: loanStartDateInput.value,
+      amount: parseFloat(stripCommas(amountInput.value)),
+      interestRate: parseFloat(interestInput.value),
+      years: parseInt(durationInput.value, 10),
+      startDate: startDateInput.value,
     };
 
     //input validation
@@ -99,7 +138,11 @@ const renderPage = (): void => {
 
     if (isValidInput) {
       const loanResult = calculateLoan(loanDetails);
-      console.log(loanResult);
+
+      // Destroy previous chart before creating a new one
+      if (myChart) {
+        myChart.destroy();
+      }
 
       // Display loan details in a chart
       myChart = new Chart(ctx, {
@@ -133,23 +176,30 @@ const renderPage = (): void => {
           '.js-loan-chart-amount'
         ) as HTMLDivElement;
         loanPrincipal.innerHTML = `
-        <p>Loan Amount <span>${String(loanResult.principal)}</span></p>
+        <p>Loan Amount</p>
+        <span style="color: rgb(31, 52, 243); font-weight: bolder;">₦${numberWithCommas(
+          loanResult.principal
+        )}</span>
         `;
 
         const totalInterest = document.querySelector(
           '.js-total-chart-interest'
         ) as HTMLDivElement;
         totalInterest.innerHTML = `
-        <p>Total Interest Payable <span>${String(
+        <p>Total Interest Payable</p>
+        <span style="color:rgb(247, 47, 91); font-weight: bolder;">₦${numberWithCommas(
           loanResult.totalInterest
-        )}</span></p>
+        )}</span>
         `;
 
         const totalPayment = document.querySelector(
           '.js-total-chart-payment'
         ) as HTMLDivElement;
         totalPayment.innerHTML = `
-        <p>Total Payment <span>${String(loanResult.totalPayment)}</span></p>
+        <p>Total Payment</p>
+        <span style="font-weight: bolder;">₦${numberWithCommas(
+          loanResult.totalPayment
+        )}</span>
         `;
       }
     } else {
@@ -160,8 +210,8 @@ const renderPage = (): void => {
       }
     }
 
-    const years = parseInt(loanDurationUserInput.value, 10);
-    const startDateStr = loanStartDateInput.value;
+    const years = parseInt(durationInput.value, 10);
+    const startDateStr = startDateInput.value;
 
     const calculatePaymentDates = (
       startDateStr: string,
@@ -187,10 +237,10 @@ const renderPage = (): void => {
 
     // Navigate the input with keyboard
     const loanInputs: HTMLInputElement[] = [
-      loanAmountUserInput,
-      loanInterestUserInput,
-      loanDurationUserInput,
-      loanStartDateInput,
+      amountInput,
+      interestInput,
+      durationInput,
+      startDateInput,
     ];
 
     // use enter key to navigate only if there is a value in the input
@@ -202,15 +252,21 @@ const renderPage = (): void => {
           const nextInput = loanInputs[index + 1];
           if (nextInput) {
             nextInput.focus();
-          } else if (calculateLoanButton) {
-            calculateLoanButton.focus();
-            calculateLoanButton.style.fontWeight = 'bold';
-            calculateLoanButton.style.backgroundColor = 'var(--PRIMARY-HOVER)';
-            calculateLoanButton.style.borderColor = 'var(--BORDER-HOVER)';
+          } else if (calculateButton) {
+            calculateButton.focus();
+            calculateButton.style.fontWeight = 'bold';
+            calculateButton.style.backgroundColor = 'var(--PRIMARY-HOVER)';
+            calculateButton.style.borderColor = 'var(--BORDER-HOVER)';
           }
         }
       });
     });
+
+    // clear input fields when calculate button is clicked
+    amountInput.value = '';
+    interestInput.value = '';
+    durationInput.value = '';
+    startDateInput.value = '';
   });
 };
 

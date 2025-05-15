@@ -21,33 +21,49 @@
         method="get"
         name="loanDetailsForm"
       >
+        <ul class="nav-links">
+          <li>Calculate</li>
+          <li>Loan Summary</li>
+          <li>Loan Schedule</li>
+        </ul>
+
         <label class="form-header">Calculate loan interest</label>
+
         <label for="loan-amount"> Loan Amount </label>
-        <input
-          type="number"
-          id="loan-amount"
-          class="loan-input amount-input js-loan-amount"
-          placeholder="Enter loan amount"
-          required
-        />
+        <div class="amount-wrapper">
+          <span class="naira-symbol">₦</span>
+          <input
+            type="text"
+            id="loan-amount"
+            class="loan-input amount-input js-loan-amount"
+            placeholder="Enter loan amount"
+            required
+          />
+        </div>
 
         <label for="loan-interest"> Annual Interest Rate </label>
-        <input
-          type="number"
-          id="loan-interest"
-          class="loan-input js-loan-interest"
-          placeholder="Enter loan Interest"
-          required
-        />
+        <div class="interest-wrapper">
+          <span class="percentage-symbol">%</span>
+          <input
+            type="number"
+            id="loan-interest"
+            class="loan-input js-loan-interest"
+            placeholder="Enter loan Interest"
+            required
+          />
+        </div>
 
         <label for="loan-duration"> Loan Duration </label>
-        <input
-          type="number"
-          id="loan-duration"
-          class="loan-input js-loan-duration"
-          placeholder="Enter loan duration"
-          required
-        />
+        <div class="duration-wrapper">
+          <span class="years-symbol">year(s)</span>
+          <input
+            type="number"
+            id="loan-duration"
+            class="loan-input js-loan-duration"
+            placeholder="Enter loan duration"
+            required
+          />
+        </div>
 
         <label for="start-date"> Start Date </label>
         <input
@@ -63,10 +79,16 @@
       </form>
 
       <div class="chart-wrapper">
-        <canvas id="myChart"></canvas>
-        <div class="chart-details js-loan-chart-amount"></div>
-        <div class="chart-details js-total-chart-interest"></div>
-        <div class="chart-details js-total-chart-payment"></div>
+        <div class="currency-choice">Currency</div>
+        <div class="canvas-container">
+          <canvas id="myChart"></canvas>
+        </div>
+
+        <div class="chart-div-container">
+          <div class="chart-details js-loan-chart-amount"></div>
+          <div class="chart-details js-total-chart-interest"></div>
+          <div class="chart-details js-total-chart-payment"></div>
+        </div>
       </div>
     </div>
 
