@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap");
 
 *,
 *::before,
@@ -10,27 +10,27 @@
 
 :root {
   /* colours */
-  --PRIMARY: #2D6A4F; /* btns, active inputs, highlights */
-  --PRIMARY-HOVER: #22543D; /* btns hover effect */
-  --PRIMARY-ACTIVE: #1B4332; /* btns press, active selection */
-  --PRIMARY-DISABLED: #B7CDC2; /* disabled btns or inputs */
-  --SECONDARY: #95D5B2; /* progress bars, sliders, minor btns */
+  --PRIMARY: #2d6a4f; /* btns, active inputs, highlights */
+  --PRIMARY-HOVER: #22543d; /* btns hover effect */
+  --PRIMARY-ACTIVE: #1b4332; /* btns press, active selection */
+  --PRIMARY-DISABLED: #b7cdc2; /* disabled btns or inputs */
+  --SECONDARY: #95d5b2; /* progress bars, sliders, minor btns */
 
-  --SUCCESS: #40916C; /* form success */
-  --ERROR: #D00000; /* form validation, failed calculation, alerts */
+  --SUCCESS: #40916c; /* form success */
+  --ERROR: #d00000; /* form validation, failed calculation, alerts */
 
-  --BACKGROUND: #F1F5F4; /* page background */
-  --INPUT-BACKGROUND: #FFFFFF; /* input fields, cards */
+  --BACKGROUND: #f1f5f4; /* page background */
+  --INPUT-BACKGROUND: #ffffff; /* input fields, cards */
 
-  --MAIN-TEXT: #1B4332; /* main body, labels */
-  --MUTED-TEXT: #6C757D; /* placeholders */
-  --DISABLED-TEXT: #CED4DA; /* disabled label text */
+  --MAIN-TEXT: #1b4332; /* main body, labels */
+  --MUTED-TEXT: #6c757d; /* placeholders */
+  --DISABLED-TEXT: #ced4da; /* disabled label text */
 
-  --BORDER: #D8F3DC; /* input borders */
-  --BORDER-HOVER: #74C69D;
+  --BORDER: #d8f3dc; /* input borders */
+  --BORDER-HOVER: #74c69d;
 
   /* box-shadow for cards/modals */
-  --BOX-SHADOW: 0 2px 8px rgba(0,0,0,0.05);
+  --BOX-SHADOW: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 html {
@@ -42,7 +42,7 @@ body {
   margin: 0 auto;
   padding: 100px 20px 0;
   background-color: var(--BORDER);
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .loan-wrapper {
@@ -59,9 +59,10 @@ body {
   background-color: var(--BACKGROUND);
 }
 
-label, input {
+label,
+input {
   display: block;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 label {
@@ -75,7 +76,7 @@ label {
   margin-bottom: 50px;
 }
 
-.loan-input:not(.calculate-loan) {
+.loan-input[type="number"] {
   border-top: transparent;
   border-left: transparent;
   border-right: transparent;
@@ -111,13 +112,13 @@ input[type="date"] {
   border-radius: 3px;
 }
 
-.amount-input[type="number"]::-webkit-inner-spin-button,
-.amount-input[type="number"]::-webkit-outer-spin-button {
+.loan-input[type="number"]::-webkit-inner-spin-button,
+.loan-input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.amount-input[type="number"] {
+.loan-input[type="number"] {
   appearance: textfield;
   -moz-appearance: textfield;
 }
@@ -138,13 +139,28 @@ input[type="date"] {
 .calculate-loan:is(:hover, :focus) {
   background-color: var(--PRIMARY-HOVER);
   border-color: var(--BORDER-HOVER);
-
 }
 
 .chart-wrapper {
   border: 2px solid black;
+  padding: 5px 25px;
   min-width: 240px;
-  height: 200px;
+  height: 300px;
+
+  & #myChart {
+    margin-bottom: 10px;
+  }
+
+  & .chart-details p {
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  & .chart-details span {
+    font-size: 15px;
+    margin-left: 100px;
+  }
 }
 
 @media (min-width: 768px) {

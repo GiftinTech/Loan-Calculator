@@ -1,48 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="author" content="GiftinTech">
-  <meta name="description" content="A simple loan calculator that shows monthly payments and an amortisation chart using HTML, CSS, JavaScript and TypeScript.">
-  <title>Loan Calculator</title>
-  <link rel="stylesheet" href="/build/styles.css">
-  <link rel="icon" href="/build/lc-favicon.png">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="GiftinTech" />
+    <meta
+      name="description"
+      content="A simple loan calculator that shows monthly payments and an amortisation chart using HTML, CSS, JavaScript and TypeScript."
+    />
+    <title>Loan Calculator</title>
+    <link rel="stylesheet" href="/build/styles.css" />
+    <link rel="icon" href="/build/lc-favicon.png" />
+  </head>
 
-<body>
-  <div class="loan-wrapper">
-    <form action="https://httpbin.org/get" method="get" name="loanDetailsForm">
-      <label class="form-header">Calculate loan interest</label>
-      <label for="loan-amount">
-        Loan Amount
-      </label>
-      <input type="number" id="loan-amount" class="loan-input amount-input js-loan-amount" placeholder="Enter loan amount" required>
+  <body>
+    <div class="loan-wrapper">
+      <form
+        action="https://httpbin.org/get"
+        method="get"
+        name="loanDetailsForm"
+      >
+        <label class="form-header">Calculate loan interest</label>
+        <label for="loan-amount"> Loan Amount </label>
+        <input
+          type="number"
+          id="loan-amount"
+          class="loan-input amount-input js-loan-amount"
+          placeholder="Enter loan amount"
+          required
+        />
 
-      <label for="loan-interest">
-        Annual Interest Rate
-      </label>
-      <input type="number" id="loan-interest" class="loan-input js-loan-interest" placeholder="Enter loan Interest" required>
+        <label for="loan-interest"> Annual Interest Rate </label>
+        <input
+          type="number"
+          id="loan-interest"
+          class="loan-input js-loan-interest"
+          placeholder="Enter loan Interest"
+          required
+        />
 
-      <label for="loan-duration">
-        Loan Duration
-      </label>
-       <input type="number" id="loan-duration" class="loan-input js-loan-duration" placeholder="Enter loan duration" required>
+        <label for="loan-duration"> Loan Duration </label>
+        <input
+          type="number"
+          id="loan-duration"
+          class="loan-input js-loan-duration"
+          placeholder="Enter loan duration"
+          required
+        />
 
-      <label for="start-date">
-        Start Date
-      </label>
-      <input type="date" class="js-loan-start-date">
+        <label for="start-date"> Start Date </label>
+        <input
+          type="date"
+          class="loan-input loan-start-date js-loan-start-date"
+        />
 
-      <input class="loan-input calculate-loan js-calculate-loan" value="Calculate" type="submit">
-    </form>
+        <input
+          class="loan-input calculate-loan js-calculate-loan"
+          value="Calculate"
+          type="submit"
+        />
+      </form>
 
-    <div class="chart-wrapper">
-      <canvas id="myChart"></canvas>
+      <div class="chart-wrapper">
+        <canvas id="myChart"></canvas>
+        <div class="chart-details js-loan-chart-amount">
+          <p>Loan Amount <span>240000</span></p>
+        </div>
+        <div class="chart-details js-total-chart-interest">
+          <p>Loan Amount <span>15000</span></p>
+        </div>
+        <div class="chart-details js-total-chart-payment">
+          <p>Loan Amount <span>255000</span></p>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <script src="/src/main.ts" type="module"></script>
-</body>
+    <script src="/src/main.ts" type="module"></script>
+  </body>
 </html>
