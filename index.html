@@ -16,78 +16,141 @@
 
   <body>
     <div class="loan-wrapper">
-      <form
-        action="https://httpbin.org/get"
-        method="get"
-        name="loanDetailsForm"
-      >
-        <ul class="nav-links">
-          <li>Calculate</li>
-          <li>Loan Summary</li>
-          <li>Loan Schedule</li>
-        </ul>
+      <ul class="nav-links">
+        <li class="js-calculate-nav">Calculate</li>
+        <li class="js-loan-summary-nav">Loan Summary</li>
+        <li class="js-loan-schedule-nav">Loan Schedule</li>
+      </ul>
+      <div class="form-wrapper">
+        <form
+          action="https://httpbin.org/get"
+          method="get"
+          name="loanDetailsForm"
+        >
+          <label class="form-header">Calculate loan interest</label>
 
-        <label class="form-header">Calculate loan interest</label>
+          <label for="loan-amount"> Loan Amount </label>
+          <div class="amount-wrapper">
+            <span class="naira-symbol">₦</span>
+            <input
+              type="text"
+              id="loan-amount"
+              class="loan-input amount-input js-loan-amount"
+              placeholder="Enter loan amount"
+              required
+            />
+          </div>
 
-        <label for="loan-amount"> Loan Amount </label>
-        <div class="amount-wrapper">
-          <span class="naira-symbol">₦</span>
+          <label for="loan-interest"> Annual Interest Rate </label>
+          <div class="interest-wrapper">
+            <span class="percentage-symbol">%</span>
+            <input
+              type="number"
+              id="loan-interest"
+              class="loan-input js-loan-interest"
+              placeholder="Enter loan Interest"
+              required
+            />
+          </div>
+
+          <label for="loan-duration"> Loan Duration </label>
+          <div class="duration-wrapper">
+            <span class="years-symbol">year(s)</span>
+            <input
+              type="number"
+              id="loan-duration"
+              class="loan-input js-loan-duration"
+              placeholder="Enter loan duration"
+              required
+            />
+          </div>
+
+          <label for="start-date"> Start Date </label>
           <input
-            type="text"
-            id="loan-amount"
-            class="loan-input amount-input js-loan-amount"
-            placeholder="Enter loan amount"
-            required
+            type="date"
+            class="loan-input loan-start-date js-loan-start-date"
           />
-        </div>
 
-        <label for="loan-interest"> Annual Interest Rate </label>
-        <div class="interest-wrapper">
-          <span class="percentage-symbol">%</span>
           <input
-            type="number"
-            id="loan-interest"
-            class="loan-input js-loan-interest"
-            placeholder="Enter loan Interest"
-            required
+            class="loan-input calculate-loan js-calculate-loan"
+            value="Calculate"
+            type="submit"
           />
+        </form>
+
+        <div class="loan-summary-table">
+          <table>
+            <caption>
+              Loan Summary
+            </caption>
+            <thead>
+              <tr>
+                <th colspan="2">Payment Breakdown</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>
+                  <time>Monthly Repayment</time>
+                </td>
+                <td>2400000</td>
+              </tr>
+              <tr>
+                <td>Total Loan Payment</td>
+                <td>300000</td>
+              </tr>
+              <tr>
+                <td>Loan Amount</td>
+                <td>300000</td>
+              </tr>
+              <tr>
+                <td>Total Interest</td>
+                <td>150000</td>
+              </tr>
+              <tr>
+                <td>Number of Installments</td>
+                <td>12</td>
+              </tr>
+              <tr>
+                <td>Interest Rate per/anum</td>
+                <td>15</td>
+              </tr>
+              <tr>
+                <td>Loan Duration (months)</td>
+                <td>150000</td>
+              </tr>
+              <tr>
+                <td>First Payment Date</td>
+                <td>May-2025</td>
+              </tr>
+              <tr>
+                <td>Last Payment Date</td>
+                <td>June-2026</td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <td colspan="2" style="text-align: right">
+                  <em>Download to Excel</em>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
 
-        <label for="loan-duration"> Loan Duration </label>
-        <div class="duration-wrapper">
-          <span class="years-symbol">year(s)</span>
-          <input
-            type="number"
-            id="loan-duration"
-            class="loan-input js-loan-duration"
-            placeholder="Enter loan duration"
-            required
-          />
-        </div>
+        <div class="chart-wrapper">
+          <div class="currency-choice">Currency</div>
+          <div class="canvas-container">
+            <canvas id="myChart"></canvas>
+          </div>
 
-        <label for="start-date"> Start Date </label>
-        <input
-          type="date"
-          class="loan-input loan-start-date js-loan-start-date"
-        />
-
-        <input
-          class="loan-input calculate-loan js-calculate-loan"
-          value="Calculate"
-          type="submit"
-        />
-      </form>
-
-      <div class="chart-wrapper">
-        <div class="currency-choice">Currency</div>
-        <div class="canvas-container">
-          <canvas id="myChart"></canvas>
-        </div>
-
-        <div class="chart-div-container">
-          <div class="chart-details js-loan-chart-amount"></div>
-          <div class="chart-details js-total-chart-interest"></div>
-          <div class="chart-details js-total-chart-payment"></div>
+          <div class="chart-div-container">
+            <div class="chart-details js-loan-chart-amount"></div>
+            <div class="chart-details js-total-chart-interest"></div>
+            <div class="chart-details js-total-chart-payment"></div>
+          </div>
         </div>
       </div>
     </div>

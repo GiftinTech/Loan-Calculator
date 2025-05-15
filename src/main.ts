@@ -271,3 +271,73 @@ const renderPage = (): void => {
 };
 
 renderPage();
+
+// Nav click events
+const formElement = document.querySelector(
+  '.form-wrapper form'
+) as HTMLFormElement;
+const loanSummaryNav = document.querySelector(
+  '.js-loan-summary-nav'
+) as HTMLLIElement;
+const calculateLoanNav = document.querySelector(
+  '.js-calculate-nav'
+) as HTMLLIElement;
+const loanScheduleNav = document.querySelector(
+  '.js-loan-schedule-nav'
+) as HTMLLIElement;
+
+const summaryNavEvents = (): void => {
+  if (!loanSummaryNav) return;
+
+  loanSummaryNav.addEventListener('click', () => {
+    const summaryTable = document.querySelector(
+      'table'
+    ) as HTMLTableElement | null;
+
+    if (!summaryTable) {
+      console.error('table element not found.');
+      return;
+    }
+
+    if (getComputedStyle(formElement).display === 'block') {
+      formElement.style.display = 'none';
+      summaryTable.style.display = 'block';
+    }
+  });
+};
+
+const calculateNavEvents = (): void => {
+  if (!calculateLoanNav) return;
+
+  calculateLoanNav.addEventListener('click', () => {
+    const isFormVisible = getComputedStyle(formElement).display === 'none';
+
+    formElement.style.display = isFormVisible ? 'block' : '';
+  });
+};
+
+const scheduleNavEvents = (): void => {
+  if (!loanScheduleNav) return;
+
+  loanScheduleNav.addEventListener('click', () => {
+    const summaryTable = document.querySelector(
+      'table'
+    ) as HTMLTableElement | null;
+
+    if (!summaryTable) {
+      console.error('table element not found.');
+      return;
+    }
+
+    if (getComputedStyle(formElement).display === 'block') {
+      formElement.style.display = 'none';
+      summaryTable.style.display = 'block';
+    }
+  });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  summaryNavEvents();
+  calculateNavEvents();
+  scheduleNavEvents();
+});
