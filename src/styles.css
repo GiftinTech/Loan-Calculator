@@ -207,7 +207,14 @@ input[type='date'] {
 /* Table Style */
 
 table {
-  margin-bottom: 25px;
+  margin: -10px 0 25px;
+  max-width: 320px;
+  min-width: 190px;
+  width: auto;
+}
+
+.loan-summary-table table {
+  min-width: 280px;
 }
 
 .loan-summary-table,
@@ -233,6 +240,10 @@ caption {
 
 tr:nth-of-type(even) {
   background-color: var(--BORDER);
+}
+
+.loan-schedule-table tr:nth-of-type(even) {
+  background-color: var(--INPUT-BACKGROUND);
 }
 
 /* Chart style */
