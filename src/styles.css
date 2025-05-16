@@ -81,6 +81,7 @@ body {
   justify-content: space-between;
   align-items: center;
 }
+
 .form-wrapper form {
   display: block;
 }
@@ -207,6 +208,10 @@ input[type='date'] {
 
 table {
   margin-bottom: 25px;
+}
+
+.loan-summary-table,
+.loan-schedule-table {
   display: none;
 }
 

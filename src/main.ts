@@ -293,57 +293,40 @@ const calculateLoanNav = document.querySelector(
 const loanScheduleNav = document.querySelector(
   '.js-loan-schedule-nav'
 ) as HTMLLIElement;
-const summaryTable = document.querySelector('table') as HTMLTableElement;
+const summaryTable = document.querySelector(
+  '.loan-summary-table'
+) as HTMLTableElement;
+const scheduleTable = document.querySelector(
+  '.loan-schedule-table'
+) as HTMLTableElement;
 
-const summaryNavEvents = (): void => {
-  if (!loanSummaryNav) return;
+const toggleNavLink = (
+  clickEvent: HTMLElement,
+  value: HTMLElement,
+  element1: HTMLElement,
+  element2: HTMLElement
+): void => {
+  if (!clickEvent) return;
 
-  loanSummaryNav.addEventListener('click', () => {
-    if (!summaryTable) {
+  clickEvent.addEventListener('click', () => {
+    if (!value) {
       console.error('table element not found.');
       return;
     }
 
-    if (getComputedStyle(formElement).display === 'block') {
-      formElement.style.display = 'none';
-      summaryTable.style.display = 'block';
-    }
-  });
-};
-
-const calculateNavEvents = (): void => {
-  if (!calculateLoanNav) return;
-
-  calculateLoanNav.addEventListener('click', () => {
-    if (getComputedStyle(summaryTable).display === 'block') {
-      formElement.style.display = 'block';
-      summaryTable.style.display = 'none';
-    }
-  });
-};
-
-const scheduleNavEvents = (): void => {
-  if (!loanScheduleNav) return;
-
-  loanScheduleNav.addEventListener('click', () => {
-    const summaryTable = document.querySelector(
-      'table'
-    ) as HTMLTableElement | null;
-
-    if (!summaryTable) {
-      console.error('table element not found.');
-      return;
-    }
-
-    if (getComputedStyle(formElement).display === 'block') {
-      formElement.style.display = 'none';
-      summaryTable.style.display = 'block';
+    if (
+      getComputedStyle(element1).display === 'block' ||
+      getComputedStyle(element2).display === 'block'
+    ) {
+      element1.style.display = 'none';
+      element2.style.display = 'none';
+      value.style.display = 'block';
     }
   });
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  summaryNavEvents();
-  calculateNavEvents();
-  scheduleNavEvents();
+  toggleNavLink(loanSummaryNav, summaryTable, formElement, scheduleTable);
+  toggleNavLink(calculateLoanNav, formElement, summaryTable, scheduleTable);
+  toggleNavLink(loanScheduleNav, scheduleTable, formElement, summaryTable);
 });
