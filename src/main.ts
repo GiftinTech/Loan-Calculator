@@ -11,11 +11,14 @@ const interestInput = document.querySelector(
   '.js-loan-interest'
 ) as HTMLInputElement;
 const durationInput = document.querySelector(
-  '.js-loan-duration'
+  '.js-loan-term-years'
 ) as HTMLInputElement;
 const startDateInput = document.querySelector(
   '.js-loan-start-date'
 ) as HTMLInputElement;
+const loanTermInput = document.querySelector(
+  '.js-loan-term'
+) as HTMLSelectElement;
 
 // button element
 const calculateButton = document.querySelector(
@@ -36,6 +39,8 @@ type LoanDetails = {
   amount: number;
   interestRate: number;
   years: number;
+  loanTermYears?: string;
+  loanTermMonths?: string;
   startDate: string;
 };
 

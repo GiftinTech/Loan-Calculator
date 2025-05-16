@@ -53,17 +53,50 @@
             />
           </div>
 
-          <label for="loan-duration"> Loan Duration </label>
-          <div class="duration-wrapper">
+          <label> Loan Term <span class="per-term">per/anum</span></label>
+          <div class="term-wrapper">
             <span class="years-symbol">year(s)</span>
             <input
               type="number"
-              id="loan-duration"
-              class="loan-input js-loan-duration"
-              placeholder="Enter loan duration"
-              required
+              class="loan-input js-loan-term-years"
+              placeholder="Enter loan term in"
             />
           </div>
+
+          <label> Loan Term <span class="per-term">per/month</span></label>
+          <div class="term-wrapper">
+            <span class="years-symbol">month(s)</span>
+            <input
+              type="number"
+              class="loan-input js-loan-term-monthly"
+              placeholder="Enter loan term in"
+            />
+          </div>
+
+          <!-- **** Ignore the commented blocks, hehe **** -->
+          <!-- <label> Loan Term </label>
+          <select name="loan-term" class="loan-term js-loan-term">
+            <option value="monthly" selected>Monthly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="semi-annually">Semi-Annually</option>
+            <option value="yearly">Annually</option>
+          </select> -->
+
+          <!--      <div>
+            <label for="loan-term"> Loan Term </label>
+            <input
+              type="text"
+              name="loan-term"
+              id="loan-term"
+              list="loan-term-list"
+            />
+            <datalist id="loan-term-list">
+              <option value="Monthly"></option>
+              <option value="Quarterly"></option>
+              <option value="Semi-Annually"></option>
+              <option value="Yearly"></option>
+            </datalist>
+          </div> -->
 
           <label for="start-date"> Start Date </label>
           <input
@@ -137,80 +170,85 @@
             </tfoot>
           </table>
         </div>
+
         <div class="loan-schedule-table">
+          <div class="estimated-payoff">
+            <h1>Estimated payoff date</h1>
+            <p>May 16, 2027</p>
+          </div>
           <table>
             <caption>
-              Repayment Schedule
+              Amortisation Schedule
             </caption>
             <thead>
               <tr class="schedule-th">
-                <th>S/N</th>
                 <th>Payment Date</th>
-                <th>Current Balance</th>
                 <th>Monthly Repayment</th>
+                <th>Interest</th>
+                <th>Current Balance</th>
               </tr>
             </thead>
 
             <tbody>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
               <tr>
-                <td>1</td>
-                <td>May-2025</td>
-                <td>240000</td>
+                <td>1/12/2025</td>
+                <td>4000</td>
+                <td>500</td>
                 <td>15000</td>
               </tr>
-              <tr>
-                <th>S/N</th>
+              <tr class="schedule-th">
                 <th>Payment Date</th>
-                <th>Current Balance</th>
                 <th>Monthly Repayment</th>
+                <th>Interest</th>
+                <th>Current Balance</th>
               </tr>
             </tbody>
 

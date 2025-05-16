@@ -48,7 +48,7 @@ body {
 .loan-wrapper {
   margin: 0 auto;
   max-width: 800px;
-  border: 2px solid var(--BORDER);
+  border: 1px solid var(--BORDER);
   border-radius: 10px;
   box-shadow: var(--BOX-SHADOW);
   padding: 20px;
@@ -105,7 +105,7 @@ label {
 
 .amount-wrapper,
 .interest-wrapper,
-.duration-wrapper {
+.term-wrapper {
   position: relative;
   width: 100%;
 }
@@ -116,7 +116,7 @@ label {
   position: absolute;
   top: 40%;
   transform: translateY(-50%);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
   color: var(--MAIN-TEXT);
   pointer-events: none;
@@ -130,7 +130,12 @@ label {
 }
 .years-symbol {
   right: 5px;
-  font-size: 10px;
+  font-size: 8px;
+}
+
+.per-term {
+  color: var(--MAIN-TEXT);
+  font-size: 8px;
 }
 
 .amount-input {
@@ -160,13 +165,14 @@ label {
   box-shadow: none;
 }
 
-input[type='date'] {
+input[type='date'],
+.loan-term {
   background-color: var(--BACKGROUND);
   padding: 2px 5px;
-  border: 1px solid #000;
+  border: 1px solid #00000070;
   border-radius: 5px;
   outline: none;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 ::-webkit-calendar-picker-indicator {
@@ -225,21 +231,47 @@ table {
 table,
 tr,
 th,
-td,
-caption {
-  border: 1px solid var(--BORDER-HOVER);
+td {
+  border-top: 1px solid var(--BORDER-HOVER);
+  border-bottom: 1px solid var(--BORDER-HOVER);
   font-family: 'Courier New', Courier, monospace;
   border-collapse: collapse;
   padding: 0.5rem;
 }
 
-tr,
 caption {
+  text-align: left;
+  margin: 20px 0;
+  font-weight: bold;
   font-size: 12px;
+}
+
+tr {
+  font-size: 10px;
 }
 
 tr:nth-of-type(even) {
   background-color: var(--BORDER);
+}
+
+.loan-schedule-table {
+  text-align: center;
+}
+
+.loan-schedule-table .estimated-payoff {
+  text-align: left;
+  margin: -15px 0 30px;
+}
+
+.loan-schedule-table .estimated-payoff h1 {
+  font-size: 11px;
+  font-weight: normal;
+  margin-bottom: 8px;
+}
+
+.loan-schedule-table .estimated-payoff p {
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .loan-schedule-table tr:nth-of-type(even) {
