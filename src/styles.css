@@ -75,14 +75,14 @@ body {
 }
 
 /* Form style */
-.form-wrapper {
+.loan-details-wrapper {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;
   align-items: center;
 }
 
-.form-wrapper form {
+.loan-details-wrapper form {
   display: block;
 }
 

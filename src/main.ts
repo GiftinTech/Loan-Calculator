@@ -27,7 +27,7 @@ const calculateButton = document.querySelector(
 
 // Nav click events
 const formElement = document.querySelector(
-  '.form-wrapper form'
+  '.loan-details-wrapper form'
 ) as HTMLFormElement;
 const loanSummaryNav = document.querySelector(
   '.js-loan-summary-nav'
@@ -141,12 +141,6 @@ const toggleNavLink = (
     }
   });
 };
-
-document.addEventListener('DOMContentLoaded', () => {
-  toggleNavLink(loanSummaryNav, summaryTable, formElement, scheduleTable);
-  toggleNavLink(calculateLoanNav, formElement, summaryTable, scheduleTable);
-  toggleNavLink(loanScheduleNav, scheduleTable, formElement, summaryTable);
-});
 
 // Loan calculation functionality
 const calculateLoan = ({
@@ -333,8 +327,11 @@ const inputPreprocessing = (ctx: HTMLCanvasElement) => {
 };
 
 // Render the data on the page
-const renderPage = (): void => {
-  inputPreprocessing(document.getElementById('myChart') as HTMLCanvasElement);
-};
 
-renderPage();
+document.addEventListener('DOMContentLoaded', () => {
+  toggleNavLink(loanSummaryNav, summaryTable, formElement, scheduleTable);
+  toggleNavLink(calculateLoanNav, formElement, summaryTable, scheduleTable);
+  toggleNavLink(loanScheduleNav, scheduleTable, formElement, summaryTable);
+
+  inputPreprocessing(document.getElementById('myChart') as HTMLCanvasElement);
+});
