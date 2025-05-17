@@ -60,15 +60,24 @@ This is a simple web-based loan calculator built with **HTML**, **CSS**, **JavaS
 ```
 
 Loan Calculator App/
-├── index.html
+├── node_modules
+├── public/
+│   └── favicon.ico
 ├── src/
 │   ├── main.ts
-│   └── styles.css
+│   └── style.css
 ├── tests/
 │   └── loanCalculator.test.ts
+├── .gitignore
+├── index.html
+├── LICENSE
+├── package-lock.json
 ├── package.json
+├── README.md
 ├── tsconfig.json
 ├── vite.config.ts
+
+
 
 ```
 
