@@ -40,6 +40,7 @@ This is a simple web-based loan calculator built with **HTML**, **CSS**, **JavaS
 ## 📌 How It Works
 
 1. User inputs:
+
    - Loan Amount (₦)
    - Interest Rate (% annual)
    - Loan Term (Years)
@@ -56,6 +57,8 @@ This is a simple web-based loan calculator built with **HTML**, **CSS**, **JavaS
 
 ## 📁 Project Structure
 
+```
+
 Loan Calculator App/
 ├── index.html
 ├── src/
@@ -67,6 +70,7 @@ Loan Calculator App/
 ├── tsconfig.json
 ├── vite.config.ts
 
+```
 
 ---
 
@@ -78,28 +82,30 @@ cd "Loan Calculator App"
 npm install
 npm run dev
 ```
+
 ---
 
 ## 💡 Future Improvements
 
-* ✅ Add Chart.js for better chart visuals
-* ✅ Input validation and error messages
-* ⏳ Save past calculations using localStorage
-* ⏳ Add dark mode toggle
+- ✅ Add Chart.js for better chart visuals
+- ✅ Input validation and error messages
+- ⏳ Save past calculations using localStorage
+- ⏳ Add dark mode toggle
 
 ---
 
 ## 🤝 Contributing
+
 Pull requests are welcome! Feel free to fork and submit a PR if you have suggestions or improvements.
 
 ---
 
 ## 📜 License
+
 MIT
 
 ---
 
 ## 👨‍💻 Author
+
 Built by GiftinTech — Frontend Developer and an aspiring full-stack developer.
-
-
