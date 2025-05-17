@@ -30,7 +30,9 @@ This is a simple web-based loan calculator built with **HTML**, **CSS**, **JavaS
 
 - **HTML5** – structure
 - **CSS3** – styling
-- **Vanilla JavaScript/TypeScript** – logic & chart rendering
+- **TypeScript** – logic
+- **Vite** – development/build tool
+- **Vitest** – unit testing framework
 - **Chart.js** – for improved chart visuals
 
 ---
@@ -54,11 +56,16 @@ This is a simple web-based loan calculator built with **HTML**, **CSS**, **JavaS
 
 ## 📁 Project Structure
 
-loan-calculator/
+Loan Calculator App/
 ├── index.html
-├── style.css
-├── amortisation.js
-├── screenshot.png
+├── src/
+│   ├── main.ts
+│   └── styles.css
+├── tests/
+│   └── loanCalculator.test.ts
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
 
 
 ---
@@ -66,11 +73,11 @@ loan-calculator/
 ## 🧪 How to Use Locally
 
 ```bash
-git clone https://github.com/your-username/loan-calculator.git
-cd loan-calculator
-open index.html
+git clone https://github.com/GiftinTech/loan-calculator.git
+cd "Loan Calculator App"
+npm install
+npm run dev
 ```
-
 ---
 
 ## 💡 Future Improvements
