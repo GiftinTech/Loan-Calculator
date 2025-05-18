@@ -48,6 +48,14 @@ type PaymentDetails = {
   last: Date;
 };
 
+const schedule: {
+  date: string;
+  monthlyPayment: number;
+  interest: number;
+  principal: number;
+  balance: number;
+}[] = [];
+
 // Utility function: formats figures with commas
 /** remove every comma before calculations */
 export const stripCommas = (val: string) => val.replace(/,/g, '');
@@ -78,27 +86,27 @@ export const calculateLoan = ({
   loanTermMonths,
   startDate,
 }: LoanDetails): PaymentDetails => {
-  /* 1 ▸ normalise the loan term */
+  // normalise the loan term
   const { totalMonths, yearsPart, monthsPart } = normaliseTerm(loanTermYears, loanTermMonths);
 
   if (totalMonths === 0) throw new Error('Loan term must be at least one month');
 
-  /* 2 ▸ core maths */
+  // maths
   const principal = amount;
   const monthlyRate = interestRate / 100 / 12; // r
-  const interestGrowth = Math.pow(1 + monthlyRate, totalMonths); // (1+r)^n
+  const interestGrowth = Math.pow(1 + monthlyRate, totalMonths);
   const monthlyPayment = (principal * interestGrowth * monthlyRate) / (interestGrowth - 1);
 
   const totalPayment = monthlyPayment * totalMonths;
   const totalInterest = totalPayment - principal;
   const firstMonthlyInterest = principal * monthlyRate;
 
-  /* 3 ▸ dates */
+  // dates
   const loanStart = new Date(startDate);
   const loanEnd = new Date(loanStart);
   loanEnd.setMonth(loanEnd.getMonth() + totalMonths);
 
-  /* 4 ▸ package & return */
+  // return
   return {
     monthlyPayment: Number(monthlyPayment.toFixed(2)),
     monthlyInterest: Number(firstMonthlyInterest.toFixed(2)),
@@ -198,165 +206,6 @@ function renderForm() {
   formPlaceholder.innerHTML = formHTML;
 }
 
-function renderSummaryTable() {
-  summaryPlaceholder.innerHTML = `
-    <div class="loan-summary-table js-summary-table">
-      <table>
-        <caption>
-          Loan Summary Result
-        </caption>
-        <thead>
-          <tr>
-            <th colspan="2">Payment Breakdown</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>Monthly Repayment</td>
-            <td>2400000</td>
-          </tr>
-          <tr>
-            <td>Total Loan Payment</td>
-            <td>300000</td>
-          </tr>
-          <tr>
-            <td>Loan Amount</td>
-            <td>300000</td>
-          </tr>
-          <tr>
-            <td>Total Interest</td>
-            <td>150000</td>
-          </tr>
-          <tr>
-            <td>Number of Installments</td>
-            <td>12</td>
-          </tr>
-          <tr>
-            <td>Interest Rate per/anum</td>
-            <td>15</td>
-          </tr>
-          <tr>
-            <td>Loan Duration (months)</td>
-            <td>150000</td>
-          </tr>
-          <tr>
-            <td>First Payment Date</td>
-            <td>May-2025</td>
-          </tr>
-          <tr>
-            <td>Last Payment Date</td>
-            <td>June-2026</td>
-          </tr>
-        </tbody>
-
-        <tfoot>
-          <tr>
-            <td colspan="2" style="text-align: right">
-              <em>Download to Excel</em>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  `;
-}
-
-function renderScheduleTable() {
-  schedulePlaceholder.innerHTML = `
-    <div class="loan-schedule-table js-loan-schedule-table">
-      <div class="estimated-payoff">
-        <h1>Estimated payoff date</h1>
-        <p>May 16, 2027</p>
-      </div>
-      <table>
-        <caption>
-          Amortisation Schedule
-        </caption>
-        <thead>
-          <tr class="schedule-th">
-            <th>Payment Date</th>
-            <th>Monthly Repayment</th>
-            <th>Interest</th>
-            <th>Current Balance</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr>
-            <td>1/12/2025</td>
-            <td>4000</td>
-            <td>500</td>
-            <td>15000</td>
-          </tr>
-          <tr class="schedule-th">
-            <th>Payment Date</th>
-            <th>Monthly Repayment</th>
-            <th>Interest</th>
-            <th>Current Balance</th>
-          </tr>
-        </tbody>
-
-        <tfoot>
-          <tr>
-            <td colspan="4" style="text-align: right">
-              <em>Download to Excel</em>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-    `;
-}
-
 //Preprocessing the user input functionality
 export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
   const form = document.querySelector('form[name="loanDetailsForm"]') as HTMLFormElement;
@@ -435,10 +284,11 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     }
 
     const loanResult = calculateLoan(loanDetails);
-    const formatStartDate = dayjs(loanResult.start).format('MMMM DD, YYYY');
-    const formatLastDate = dayjs(loanResult.last).format('MMM D, YYYY');
+    if (!loanResult) return;
+    const formatStartDate = dayjs(loanResult.start);
+    const formatLastDate = dayjs(loanResult.last).format('MMMM D, YYYY');
     console.log(loanResult);
-    console.log(formatStartDate);
+    console.log(formatStartDate.format('MMMM D, YYYY'));
     console.log(formatLastDate);
 
     // Display loanDetails in a chart
@@ -482,8 +332,155 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
 
     // Clear inputs after each calculation
     inputs.forEach((inp) => (inp.value = ''));
+
+    // schedule table
+    schedule.length = 0;
+
+    const totalMonths =
+      loanResult.calculatedYears > 0
+        ? loanResult.calculatedYears * 12
+        : loanResult.calculatedMonths;
+
+    let balance = loanResult.principal;
+
+    for (let i = 0; i < totalMonths; i++) {
+      const currentDate = formatStartDate.add(i, 'month');
+      const interest = balance * loanResult.calculatedInterest;
+      const principal = loanResult.monthlyPayment - interest;
+      balance = balance - principal;
+
+      schedule.push({
+        date: currentDate.format('MMMM D, YYYY'),
+        monthlyPayment: +loanResult.monthlyPayment.toFixed(2),
+        interest: +interest.toFixed(2),
+        principal: +principal.toFixed(2),
+        balance: +balance.toFixed(2) > 0 ? +balance.toFixed(2) : 0,
+      });
+    }
+
+    console.log('Schedule:', schedule);
+
+    renderScheduleTable();
   });
 };
+
+function renderSummaryTable() {
+  summaryPlaceholder.innerHTML = `
+    <div class="loan-summary-table js-summary-table">
+      <table>
+        <caption>
+          Loan Summary Result
+        </caption>
+        <thead>
+          <tr>
+            <th colspan="2">Payment Breakdown</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>Monthly Repayment</td>
+            <td>2400000</td>
+          </tr>
+          <tr>
+            <td>Total Loan Payment</td>
+            <td>300000</td>
+          </tr>
+          <tr>
+            <td>Loan Amount</td>
+            <td>300000</td>
+          </tr>
+          <tr>
+            <td>Total Interest</td>
+            <td>150000</td>
+          </tr>
+          <tr>
+            <td>Number of Installments</td>
+            <td>12</td>
+          </tr>
+          <tr>
+            <td>Interest Rate per/anum</td>
+            <td>15</td>
+          </tr>
+          <tr>
+            <td>Loan Duration (months)</td>
+            <td>150000</td>
+          </tr>
+          <tr>
+            <td>First Payment Date</td>
+            <td>May-2025</td>
+          </tr>
+          <tr>
+            <td>Last Payment Date</td>
+            <td>June-2026</td>
+          </tr>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td colspan="2" style="text-align: right">
+              <em>Download to Excel</em>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  `;
+}
+
+function renderScheduleTable() {
+  if (!document.querySelector('.js-loan-schedule-table')) {
+    schedulePlaceholder.innerHTML = `
+    <div class="loan-schedule-table js-loan-schedule-table">
+      <div class="estimated-payoff">
+        <h1>Estimated payoff date</h1>
+        <p>-</p>
+      </div>
+
+      <table>
+        <caption>Amortisation Schedule</caption>
+        <thead>
+          <tr class="schedule-th">
+            <th>Payment Date</th>
+            <th>Monthly Repayment</th>
+            <th>Interest</th>
+            <th>Principal</th>
+            <th>Current Balance</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+        <tfoot>
+          <tr><td colspan="5" style="text-align:right"><em>Download to CSV</em></td></tr>
+        </tfoot>
+      </table>
+    </div>`;
+  }
+
+  const tbody = document.getElementById('schedule-body')!;
+  if (!schedule.length) {
+    tbody.innerHTML =
+      '<tr><td colspan="5" style="text-align:center">No schedule data yet</td></tr>';
+    return;
+  }
+
+  const rows = schedule
+    .map(
+      (e) => `
+      <tr>
+        <td>${e.date}</td>
+        <td>${e.monthlyPayment.toLocaleString()}</td>
+        <td>${e.interest.toLocaleString()}</td>
+        <td>${e.principal.toLocaleString()}</td>
+        <td>${e.balance.toLocaleString()}</td>
+      </tr>`
+    )
+    .join('');
+  tbody.innerHTML = rows;
+
+  // update payoff date
+  (document.querySelector('.estimated-payoff p') as HTMLElement).textContent =
+    schedule.at(-1)!.date ?? '';
+}
 
 // Render the data on the page
 document.addEventListener('DOMContentLoaded', () => {
@@ -492,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSummaryTable();
   renderScheduleTable();
 
-  // Query elements *after* they’ve been injected
+  // Query elements after they’ve been injected
   const formElement = document.querySelector('.js-form-placeholder form') as HTMLElement;
   const summaryTable = document.querySelector('.js-summary-placeholder div') as HTMLElement;
   const scheduleTable = document.querySelector('.js-schedule-placeholder div') as HTMLElement;
