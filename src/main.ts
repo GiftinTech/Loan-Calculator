@@ -292,6 +292,7 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     console.log(formatLastDate);
 
     // Display loanDetails in a chart
+    myChart?.destroy();
     myChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
@@ -350,7 +351,7 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
       balance = balance - principal;
 
       schedule.push({
-        date: currentDate.format('MMMM D, YYYY'),
+        date: currentDate.format('M/DD/YYYY'),
         monthlyPayment: +loanResult.monthlyPayment.toFixed(2),
         interest: +interest.toFixed(2),
         principal: +principal.toFixed(2),
@@ -450,7 +451,19 @@ function renderScheduleTable() {
         </thead>
         <tbody id="schedule-body"></tbody>
         <tfoot>
-          <tr><td colspan="5" style="text-align:right"><em>Download to CSV</em></td></tr>
+          <tr>
+          <td class="schedule-th">Payment Date</td>
+            <td>Monthly Repayment</td>
+            <td>Interest</td>
+            <td>Principal</td>
+            <td>Current Balance</td>
+          </tr>
+            <td colspan="5" style="text-align:right">
+              <button id="downloadCsvBtn">
+                ⬇️<em>Download to CSV</em>
+              </button>
+            </td>
+          </tr>
         </tfoot>
       </table>
     </div>`;
@@ -464,22 +477,50 @@ function renderScheduleTable() {
   }
 
   const rows = schedule
-    .map(
-      (e) => `
-      <tr>
+    .map((e) => {
+      const now = dayjs();
+      const rowClass = dayjs(e.date, 'D/MM/YYYY').isSame(now, 'month')
+        ? 'current-payment'
+        : dayjs(e.date, 'D/MM/YYYY').isBefore(now, 'month')
+        ? 'past-payment'
+        : 'future-payment';
+
+      return `
+      <tr class="${rowClass}">
         <td>${e.date}</td>
-        <td>${e.monthlyPayment.toLocaleString()}</td>
-        <td>${e.interest.toLocaleString()}</td>
-        <td>${e.principal.toLocaleString()}</td>
-        <td>${e.balance.toLocaleString()}</td>
-      </tr>`
-    )
+        <td>₦${e.monthlyPayment.toLocaleString()}</td>
+        <td>₦${e.interest.toLocaleString()}</td>
+        <td>₦${e.principal.toLocaleString()}</td>
+        <td>₦${e.balance.toLocaleString()}</td>
+      </tr>`;
+    })
     .join('');
   tbody.innerHTML = rows;
 
   // update payoff date
-  (document.querySelector('.estimated-payoff p') as HTMLElement).textContent =
-    schedule.at(-1)!.date ?? '';
+  const pDate = schedule.at(-1)!.date ?? '';
+  const formatPDate = pDate ? dayjs(pDate, 'D/MM/YYYY').format('D MMMM, YYYY') : '';
+  (document.querySelector('.estimated-payoff p') as HTMLElement).textContent = formatPDate;
+
+  document.getElementById('downloadCsvBtn')?.addEventListener('click', () => {
+    const csvHeaders = [
+      'Payment Date',
+      'Monthly Repayment',
+      'Interest',
+      'Principal',
+      'Current Balance',
+    ];
+    const csvRows = schedule.map((entry) =>
+      [entry.date, entry.monthlyPayment, entry.interest, entry.principal, entry.balance].join(',')
+    );
+
+    const csvContent = [csvHeaders.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'loan_schedule.csv';
+    link.click();
+  });
 }
 
 // Render the data on the page

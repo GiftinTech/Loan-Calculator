@@ -250,12 +250,13 @@ tr {
   font-size: 10px;
 }
 
-tr:nth-of-type(even) {
+.loan-summary-table tr:nth-of-type(even) {
   background-color: var(--BORDER);
 }
 
 .loan-schedule-table {
   text-align: center;
+  height: auto;
 }
 
 .loan-schedule-table .estimated-payoff {
@@ -274,8 +275,18 @@ tr:nth-of-type(even) {
   font-weight: bold;
 }
 
-.loan-schedule-table tr:nth-of-type(even) {
-  background-color: var(--INPUT-BACKGROUND);
+.past-payment {
+  background-color: #f0f0f0;
+  color: #999;
+}
+
+.future-payment {
+  background-color: #fff;
+}
+
+.current-payment {
+  background-color: #dbeafe;
+  font-weight: bold;
 }
 
 /* Chart style */
