@@ -3,12 +3,6 @@ import { Chart } from 'chart.js/auto';
 let myChart: Chart | null = null;
 
 // DOM
-// input elements
-const amountInput = document.querySelector('.js-loan-amount') as HTMLInputElement;
-const interestInput = document.querySelector('.js-loan-interest') as HTMLInputElement;
-const loanTermYearsInput = document.querySelector('.js-loan-term-years') as HTMLInputElement;
-const loanTermMonthsInput = document.querySelector('.js-loan-term-month') as HTMLInputElement;
-const startDateInput = document.querySelector('.js-loan-start-date') as HTMLInputElement;
 
 const formPlaceholder = document.querySelector('.js-form-placeholder') as HTMLDivElement;
 const summaryPlaceholder = document.querySelector('.js-summary-placeholder') as HTMLDivElement;
@@ -16,19 +10,6 @@ const schedulePlaceholder = document.querySelector('.js-schedule-placeholder') a
 
 // button element
 const calculateButton = document.querySelector('.js-calculate-loan') as HTMLInputElement;
-
-// Type guard for missing elements
-if (
-  !amountInput ||
-  !interestInput ||
-  !loanTermYearsInput ||
-  !loanTermMonthsInput ||
-  !calculateButton ||
-  !startDateInput
-) {
-  // throw new Error('One or more input elements are missing in the DOM.');
-  renderForm();
-}
 
 // type aliases
 export type LoanDetails = {
@@ -62,39 +43,16 @@ function numberWithCommas(x: number | string) {
   return parts.join('.');
 }
 
-/* ---------- live formatting ---------- */
-export function initLoanCalculatorDOM() {
-  if (!amountInput) return;
-
-  amountInput.addEventListener('input', () => {
-    // caret position bookkeeping so typing feels natural
-    const start = amountInput.selectionStart ?? 0;
-
-    // raw numeric string without commas
-    const raw = stripCommas(amountInput.value);
-
-    // bail if user deleted everything
-    if (raw === '') {
-      amountInput.value = '';
+function initLiveFormatting(el: HTMLInputElement) {
+  el.addEventListener('input', () => {
+    const raw = stripCommas(el.value);
+    if (!raw) {
+      el.value = '';
       return;
     }
-
-    // format and re-set the value
-    amountInput.value = numberWithCommas(raw);
-
-    /* restore caret near the end; optional: smarter caret logic */
-    amountInput.setSelectionRange(amountInput.value.length, amountInput.value.length);
+    el.value = numberWithCommas(raw);
   });
-
-  /* Assure perfect formatting when user leaves field */
-  amountInput.addEventListener('blur', () => {
-    amountInput.value = numberWithCommas(amountInput.value);
-  }); // ChatGPT code
-}
-if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    initLoanCalculatorDOM();
-  });
+  el.addEventListener('blur', () => (el.value = numberWithCommas(el.value)));
 }
 
 // Loan calculation functionality
@@ -138,147 +96,6 @@ export const calculateLoan = ({
     start: loanStart,
     last: lastPayment,
   };
-};
-
-//Preprocessing the user input functionality
-export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
-  calculateButton.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    // define loan details object for user inputs
-    const loanDetails: LoanDetails = {
-      amount: parseFloat(stripCommas(amountInput.value)),
-      interestRate: parseFloat(interestInput.value),
-      loanTermYears: parseInt(loanTermYearsInput.value, 10),
-      loanTermMonths: parseInt(loanTermYearsInput.value, 10),
-      startDate: startDateInput.value,
-    };
-
-    // store the calculateLoan(loanDetails) output in loanResult
-    const loanResult = calculateLoan(loanDetails);
-
-    //input validation
-    const isValidInput =
-      !isNaN(loanDetails.amount) &&
-      loanDetails.amount >= 500 &&
-      !isNaN(loanDetails.interestRate) &&
-      loanDetails.interestRate > 0 &&
-      loanDetails.loanTermYears !== undefined &&
-      !isNaN(loanDetails.loanTermYears) &&
-      loanDetails.loanTermYears > 0 &&
-      loanDetails.loanTermMonths !== undefined &&
-      !isNaN(loanDetails.loanTermMonths) &&
-      loanDetails.loanTermMonths > 0 &&
-      loanDetails.startDate !== '';
-
-    if (isValidInput) {
-      // Destroy previous chart before creating a new one
-      if (myChart) {
-        myChart.destroy();
-      }
-
-      // Display loan details in a chart
-      myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: [],
-          datasets: [
-            {
-              label: 'Loan Payment',
-              data: [loanResult.principal, loanResult.totalInterest],
-              borderWidth: 1,
-              backgroundColor: ['rgb(31, 52, 243)', 'rgb(247, 47, 91)'],
-              hoverOffset: 4,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom',
-            },
-          },
-          maintainAspectRatio: false,
-        },
-      });
-
-      // Displays the chart details in figures for UX
-      if (myChart) {
-        const loanPrincipal = document.querySelector('.js-loan-chart-amount') as HTMLDivElement;
-        loanPrincipal.innerHTML = `
-        <p>Loan Amount</p>
-        <span style="color: rgb(31, 52, 243); font-weight: bolder;">₦${numberWithCommas(
-          loanResult.principal
-        )}</span>
-        `;
-
-        const totalInterest = document.querySelector('.js-total-chart-interest') as HTMLDivElement;
-        totalInterest.innerHTML = `
-        <p>Total Interest Payable</p>
-        <span style="color:rgb(247, 47, 91); font-weight: bolder;">₦${numberWithCommas(
-          loanResult.totalInterest
-        )}</span>
-        `;
-
-        const totalPayment = document.querySelector('.js-total-chart-payment') as HTMLDivElement;
-        totalPayment.innerHTML = `
-        <p>Total Payment</p>
-        <span style="font-weight: bolder;">₦${numberWithCommas(loanResult.totalPayment)}</span>
-        `;
-      }
-    } else {
-      if (!(e instanceof MouseEvent)) {
-        return;
-      } else {
-        console.log('Invalid Input');
-      }
-    }
-
-    // display calculateLoan(LoanDetails) output
-    console.log(loanResult);
-
-    // display start date and end date
-    console.log(loanResult.start);
-    console.log(loanResult.last);
-
-    // Navigate the input with keyboard
-    const loanInputs: HTMLInputElement[] = [
-      amountInput,
-      interestInput,
-      loanTermYearsInput,
-      loanTermMonthsInput,
-      startDateInput,
-    ];
-
-    // use enter key to navigate only if there is a value in the input
-    loanInputs.forEach((input, index) => {
-      input.addEventListener('keyup', function (e) {
-        if (e.key === 'Enter' && this.value) {
-          e.preventDefault();
-
-          const nextInput = loanInputs[index + 1];
-          if (nextInput) {
-            nextInput.focus();
-          } else if (calculateButton) {
-            calculateButton.focus();
-            calculateButton.style.fontWeight = 'bold';
-            calculateButton.style.backgroundColor = 'var(--PRIMARY-HOVER)';
-            calculateButton.style.borderColor = 'var(--BORDER-HOVER)';
-          }
-        }
-      });
-    });
-
-    // clear input fields when calculate button is clicked
-    amountInput.value = '';
-    interestInput.value = '';
-    loanTermYearsInput.value = '';
-    loanTermMonthsInput.value = '';
-    startDateInput.value = '';
-
-    //call renderForm();
-  });
 };
 
 const toggleNavLink = (
@@ -335,6 +152,7 @@ function renderForm() {
         <span class="years-symbol">year(s)</span>
         <input
           type="number"
+          data-optional
           class="loan-input js-loan-term-years"
           placeholder="Enter loan term in"
         />
@@ -345,36 +163,12 @@ function renderForm() {
         <span class="years-symbol">month(s)</span>
         <input
           type="number"
+          data-optional
           class="loan-input js-loan-term-month"
           placeholder="Enter loan term in"
         />
       </div>
-
-      <!-- **** Ignore the commented blocks, hehe **** -->
-      <!-- <label> Loan Term </label>
-      <select name="loan-term" class="loan-term js-loan-term">
-        <option value="monthly" selected>Monthly</option>
-        <option value="quarterly">Quarterly</option>
-        <option value="semi-annually">Semi-Annually</option>
-        <option value="yearly">Annually</option>
-      </select> -->
-
-      <!--      <div>
-        <label for="loan-term"> Loan Term </label>
-        <input
-          type="text"
-          name="loan-term"
-          id="loan-term"
-          list="loan-term-list"
-        />
-        <datalist id="loan-term-list">
-          <option value="Monthly"></option>
-          <option value="Quarterly"></option>
-          <option value="Semi-Annually"></option>
-          <option value="Yearly"></option>
-        </datalist>
-      </div> -->
-
+      
       <label for="start-date"> Start Date </label>
       <input type="date" class="loan-input loan-start-date js-loan-start-date" />
 
@@ -548,14 +342,132 @@ function renderScheduleTable() {
     `;
 }
 
+//Preprocessing the user input functionality
+export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
+  const form = document.querySelector('form[name="loanDetailsForm"]') as HTMLFormElement;
+  if (!form) {
+    console.error('Loan form not found in DOM');
+    return;
+  }
+
+  const amountInput = form.querySelector('.js-loan-amount') as HTMLInputElement;
+  const rateInput = form.querySelector('.js-loan-interest') as HTMLInputElement;
+  const yearsInput = form.querySelector('.js-loan-term-years') as HTMLInputElement;
+  const monthsInput = form.querySelector('.js-loan-term-month') as HTMLInputElement;
+  const startInput = form.querySelector('.js-loan-start-date') as HTMLInputElement;
+  const calcButton = form.querySelector('.js-calculate-loan') as HTMLInputElement;
+
+  initLiveFormatting(amountInput);
+
+  calcButton.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    const loanDetails: LoanDetails = {
+      amount: parseFloat(stripCommas(amountInput.value)),
+      interestRate: parseFloat(rateInput.value),
+      loanTermYears: parseInt(yearsInput.value, 10) || undefined,
+      loanTermMonths: parseInt(monthsInput.value, 10) || undefined,
+      startDate: startInput.value,
+    };
+
+    console.log(loanDetails);
+
+    /* clear & keyboard nav */
+    const inputs = [amountInput, rateInput, yearsInput, monthsInput, startInput];
+
+    inputs.forEach((inp, i) => {
+      inp.addEventListener('keyup', (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+
+          const isOptional = inp.hasAttribute('data-optional');
+          const hasValue = inp.value && inp.value.trim().length > 0;
+
+          if (hasValue || isOptional) {
+            const nextInput = inputs[i + 1];
+            if (nextInput) {
+              nextInput.focus();
+            } else {
+              calcButton.click();
+            }
+          } else {
+            // Optionally, give feedback (e.g., red border)
+            inp.focus();
+          }
+        }
+      });
+    });
+
+    //input validation
+    const hasY = loanDetails.loanTermYears && loanDetails.loanTermYears > 0;
+    const hasM = loanDetails.loanTermMonths && loanDetails.loanTermMonths > 0;
+    if (
+      isNaN(loanDetails.amount) ||
+      loanDetails.amount < 500 ||
+      isNaN(loanDetails.interestRate) ||
+      loanDetails.interestRate <= 0 ||
+      (!hasY && !hasM) ||
+      (hasY && hasM) ||
+      !loanDetails.startDate
+    ) {
+      console.warn('Please fill exactly one term field and valid numbers');
+      return;
+    }
+
+    const loanResult = calculateLoan(loanDetails);
+
+    // Display loanDetails in a chart
+    myChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Loan Payment',
+            data: [loanResult.principal, loanResult.totalInterest],
+            borderWidth: 1,
+            backgroundColor: ['rgb(31, 52, 243)', 'rgb(247, 47, 91)'],
+            hoverOffset: 4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          },
+        },
+        maintainAspectRatio: false,
+      },
+    });
+
+    // Displays the chart details in figures for UX
+    (
+      document.querySelector('.js-loan-chart-amount') as HTMLDivElement
+    ).innerHTML = `<p>Loan Amount</p><span>₦${numberWithCommas(loanResult.principal)}</span>`;
+    (
+      document.querySelector('.js-total-chart-interest') as HTMLDivElement
+    ).innerHTML = `<p>Total Interest</p><span>₦${numberWithCommas(
+      loanResult.totalInterest
+    )}</span>`;
+    (
+      document.querySelector('.js-total-chart-payment') as HTMLDivElement
+    ).innerHTML = `<p>Total Payment</p><span>₦${numberWithCommas(loanResult.totalPayment)}</span>`;
+
+    // Clear inputs after each calculation
+    inputs.forEach((inp) => (inp.value = ''));
+  });
+};
+
 // Render the data on the page
 document.addEventListener('DOMContentLoaded', () => {
-  // Step 1: Render content first
+  // Render content first
   renderForm();
   renderSummaryTable();
   renderScheduleTable();
 
-  // Step 2: Requery elements *after* they’ve been injected
+  // Query elements *after* they’ve been injected
   const formElement = document.querySelector('.js-form-placeholder form') as HTMLElement;
   const summaryTable = document.querySelector('.js-summary-placeholder div') as HTMLElement;
   const scheduleTable = document.querySelector('.js-schedule-placeholder div') as HTMLElement;
@@ -564,10 +476,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const calculateLoanNav = document.querySelector('.js-calculate-nav') as HTMLLIElement;
   const loanScheduleNav = document.querySelector('.js-loan-schedule-nav') as HTMLLIElement;
 
-  // Step 3: Set up navigation logic
+  // Set up navigation logic
   toggleNavLink(loanSummaryNav, summaryTable, formElement, scheduleTable);
   toggleNavLink(calculateLoanNav, formElement, summaryTable, scheduleTable);
   toggleNavLink(loanScheduleNav, scheduleTable, formElement, summaryTable);
 
-  inputPreprocessing(document.getElementById('myChart') as HTMLCanvasElement);
+  const canvas = document.getElementById('myChart') as HTMLCanvasElement;
+
+  inputPreprocessing(canvas);
 });
