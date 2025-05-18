@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="GiftinTech" />
+    <meta
+      name="description"
+      content="A simple loan calculator that shows monthly payments and an amortisation chart using HTML, CSS, JavaScript and TypeScript."
+    />
+    <title>Loan Calculator</title>
+    <link rel="icon" href="./lc-favicon.png" />
+    <script type="module" crossorigin src="./assets/index-3DzAIzvc.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Bu2gX9dd.css">
+  </head>
+
+  <body>
+    <div class="loan-wrapper">
+      <ul class="nav-links">
+        <li class="js-calculate-nav">Calculate</li>
+        <li class="js-loan-summary-nav">Loan Summary</li>
+        <li class="js-loan-schedule-nav">Loan Schedule</li>
+      </ul>
+      <div class="loan-details-wrapper">
+        <div class="js-form-placeholder"></div>
+
+        <div class="js-summary-placeholder summary-placeholder"></div>
+        <div class="js-schedule-placeholder schedule-placeholder"></div>
+
+        <div class="chart-wrapper">
+          <div class="currency-choice">Currency</div>
+          <div class="canvas-container">
+            <canvas id="myChart"></canvas>
+          </div>
+
+          <div class="chart-div-container">
+            <div class="chart-details js-loan-chart-amount"></div>
+            <div class="chart-details js-total-chart-interest"></div>
+            <div class="chart-details js-total-chart-payment"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
