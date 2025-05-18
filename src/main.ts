@@ -8,8 +8,22 @@ const formPlaceholder = document.querySelector('.js-form-placeholder') as HTMLDi
 const summaryPlaceholder = document.querySelector('.js-summary-placeholder') as HTMLDivElement;
 const schedulePlaceholder = document.querySelector('.js-schedule-placeholder') as HTMLDivElement;
 
-// button element
-const calculateButton = document.querySelector('.js-calculate-loan') as HTMLInputElement;
+//  Utility: convert a (years, months) pair into totalMonths  ⇢ number of payment periods yearsPart ⇢ whole-years portion monthsPart ⇢ leftover months
+
+function normaliseTerm(years: number | undefined, months: number | undefined) {
+  const y = years ?? 0;
+  const m = months ?? 0;
+
+  // if user typed only months, y will be 0
+  // if user typed only years,  m will be 0
+  const totalMonths = y * 12 + m;
+
+  // derive “X years Y months” for display
+  const yearsPart = Math.floor(totalMonths / 12);
+  const monthsPart = totalMonths % 12;
+
+  return { totalMonths, yearsPart, monthsPart };
+}
 
 // type aliases
 export type LoanDetails = {
@@ -63,38 +77,38 @@ export const calculateLoan = ({
   loanTermMonths,
   startDate,
 }: LoanDetails): PaymentDetails => {
-  const principal: number = amount;
-  const calculatedInterest = interestRate / 100 / 12;
-  const calculatedYears = loanTermYears! * 12;
+  /* 1 ▸ normalise the loan term */
+  const { totalMonths, yearsPart, monthsPart } = normaliseTerm(loanTermYears, loanTermMonths);
 
-  const calculatedMonths = loanTermMonths! / 12;
+  if (totalMonths === 0) throw new Error('Loan term must be at least one month');
 
+  /* 2 ▸ core maths */
+  const principal = amount;
+  const monthlyRate = interestRate / 100 / 12; // r
+  const interestGrowth = Math.pow(1 + monthlyRate, totalMonths); // (1+r)^n
+  const monthlyPayment = (principal * interestGrowth * monthlyRate) / (interestGrowth - 1);
+
+  const totalPayment = monthlyPayment * totalMonths;
+  const totalInterest = totalPayment - principal;
+  const firstMonthlyInterest = principal * monthlyRate;
+
+  /* 3 ▸ dates */
   const loanStart = new Date(startDate);
+  const loanEnd = new Date(loanStart);
+  loanEnd.setMonth(loanEnd.getMonth() + totalMonths);
 
-  const firstPayment = new Date(loanStart);
-  firstPayment.setMonth(firstPayment.getMonth());
-
-  const lastPayment = new Date(firstPayment);
-  lastPayment.setMonth(lastPayment.getMonth() + loanTermYears! * 12);
-
-  const monthlyInterest = calculatedInterest * principal;
-  const interestGrowth = Math.pow(1 + calculatedInterest, calculatedYears);
-  const monthly = (principal * interestGrowth * calculatedInterest) / (interestGrowth - 1);
-
-  const total = monthly * calculatedYears;
-  const interest = total - principal;
-
+  /* 4 ▸ package & return */
   return {
-    monthlyPayment: parseFloat(monthly.toFixed(2)),
-    monthlyInterest: parseFloat(monthlyInterest.toFixed(2)),
-    totalInterest: parseFloat(interest.toFixed(2)),
-    totalPayment: parseFloat(total.toFixed(2)),
+    monthlyPayment: Number(monthlyPayment.toFixed(2)),
+    monthlyInterest: Number(firstMonthlyInterest.toFixed(2)),
+    totalInterest: Number(totalInterest.toFixed(2)),
+    totalPayment: Number(totalPayment.toFixed(2)),
     principal,
-    calculatedYears,
-    calculatedMonths,
-    calculatedInterest,
+    calculatedYears: yearsPart,
+    calculatedMonths: monthsPart,
+    calculatedInterest: monthlyRate,
     start: loanStart,
-    last: lastPayment,
+    last: loanEnd,
   };
 };
 
@@ -399,22 +413,30 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     });
 
     //input validation
-    const hasY = loanDetails.loanTermYears && loanDetails.loanTermYears > 0;
-    const hasM = loanDetails.loanTermMonths && loanDetails.loanTermMonths > 0;
-    if (
-      isNaN(loanDetails.amount) ||
-      loanDetails.amount < 500 ||
-      isNaN(loanDetails.interestRate) ||
-      loanDetails.interestRate <= 0 ||
-      (!hasY && !hasM) ||
-      (hasY && hasM) ||
-      !loanDetails.startDate
-    ) {
+    const years = loanDetails.loanTermYears;
+    const months = loanDetails.loanTermMonths;
+
+    const onlyOneTerm =
+      (years && years > 0 && (!months || months === 0)) ||
+      (months && months > 0 && (!years || years === 0));
+
+    const isValidInput =
+      !isNaN(loanDetails.amount) &&
+      loanDetails.amount >= 500 &&
+      !isNaN(loanDetails.interestRate) &&
+      loanDetails.interestRate > 0 &&
+      onlyOneTerm && //ensures user enters only one field
+      loanDetails.startDate !== '';
+
+    if (!isValidInput) {
       console.warn('Please fill exactly one term field and valid numbers');
       return;
     }
 
     const loanResult = calculateLoan(loanDetails);
+    console.log(loanResult);
+    console.log(loanResult.start.toLocaleDateString());
+    console.log(loanResult.last.toLocaleDateString());
 
     // Display loanDetails in a chart
     myChart = new Chart(ctx, {
