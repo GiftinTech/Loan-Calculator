@@ -48,13 +48,27 @@ type PaymentDetails = {
   last: Date;
 };
 
-const schedule: {
+interface SummaryEntry {
+  monthlyPayment: number;
+  totalPayment: number;
+  principal: number;
+  totalInterest: number;
+  installmentNum: number;
+  interestRate: number;
+  durationMonths: number;
+  start: Date;
+  last: Date;
+}
+const summary: SummaryEntry[] = [];
+
+interface ScheduleEntry {
   date: string;
   monthlyPayment: number;
   interest: number;
   principal: number;
   balance: number;
-}[] = [];
+}
+const schedule: ScheduleEntry[] = [];
 
 // Utility function: formats figures with commas
 /** remove every comma before calculations */
@@ -206,7 +220,187 @@ function renderForm() {
   formPlaceholder.innerHTML = formHTML;
 }
 
-//Preprocessing the user input functionality
+// Render summary table
+function renderSummaryTable() {
+  summaryPlaceholder.innerHTML = `
+    <div class="loan-summary-table js-summary-table">
+      <table>
+        <caption>
+          Loan Summary Result
+        </caption>
+        <thead>
+          <tr>
+            <th colspan="2">Payment Breakdown</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>Monthly Repayment</td>
+            <td>2400000</td>
+          </tr>
+          <tr>
+            <td>Total Loan Payment</td>
+            <td>300000</td>
+          </tr>
+          <tr>
+            <td>Loan Amount</td>
+            <td>300000</td>
+          </tr>
+          <tr>
+            <td>Total Interest</td>
+            <td>150000</td>
+          </tr>
+          <tr>
+            <td>Number of Installments</td>
+            <td>12</td>
+          </tr>
+          <tr>
+            <td>Interest Rate per/anum</td>
+            <td>15</td>
+          </tr>
+          <tr>
+            <td>Loan Duration (months)</td>
+            <td>150000</td>
+          </tr>
+          <tr>
+            <td>First Payment Date</td>
+            <td>May-2025</td>
+          </tr>
+          <tr>
+            <td>Last Payment Date</td>
+            <td>June-2026</td>
+          </tr>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td colspan="2" style="text-align: right">
+              <em>Download to Excel</em>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  `;
+}
+
+// Render schedule table
+function renderScheduleTable() {
+  if (!document.querySelector('.js-loan-schedule-table')) {
+    schedulePlaceholder.innerHTML = `
+    <div class="loan-schedule-table js-loan-schedule-table">
+      <div class="estimated-payoff">
+        <h1>Estimated payoff date</h1>
+        <p class="payoff-p">—</p>
+
+        <h2>Current Balance</h2>
+        <p class="bal-p">—</p>
+      </div>
+
+      <table>
+        <caption>Amortisation Schedule</caption>
+        <thead>
+          <tr class="schedule-th">
+            <th>Payment Date</th>
+            <th>Monthly Repayment</th>
+            <th>Interest</th>
+            <th>Principal</th>
+            <th>Current Balance</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+        <tfoot>
+          <tr>
+            <td>Payment Date</td>
+            <td>Monthly Repayment</td>
+            <td>Interest</td>
+            <td>Principal</td>
+            <td>Current Balance</td>
+          </tr>
+          <tr>
+            <td colspan="5" style="text-align:right">
+              <button id="downloadCsvBtn">
+                ⬇️<em>Download to CSV</em>
+              </button>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+  }
+
+  const tbody = document.getElementById('schedule-body')!;
+  if (!schedule.length) {
+    tbody.innerHTML =
+      '<tr><td colspan="5" style="text-align:center">No schedule data yet</td></tr>';
+    return;
+  }
+
+  const rows = schedule
+    .map((e) => {
+      const now = dayjs();
+      const rowClass = dayjs(e.date, 'D/MM/YYYY').isSame(now, 'month')
+        ? 'current-payment'
+        : dayjs(e.date, 'D/MM/YYYY').isBefore(now, 'month')
+        ? 'past-payment'
+        : 'future-payment';
+
+      return `
+      <tr class="${rowClass}">
+        <td>${e.date}</td>
+        <td>₦${e.monthlyPayment.toLocaleString()}</td>
+        <td>₦${e.interest.toLocaleString()}</td>
+        <td>₦${e.principal.toLocaleString()}</td>
+        <td>₦${e.balance.toLocaleString()}</td>
+      </tr>`;
+    })
+    .join('');
+  tbody.innerHTML = rows;
+
+  // update payoff date
+  const pDate = schedule.at(-1)!.date ?? '';
+  const formatPDate = pDate ? dayjs(pDate, 'D/MM/YYYY').format('D MMMM, YYYY') : '';
+  (document.querySelector('.estimated-payoff .payoff-p') as HTMLElement).textContent = formatPDate;
+
+  //update current month date
+  const today = dayjs();
+  const currentEntry = schedule.find(
+    (e) => dayjs(e.date, 'D/MM/YYYY').isSame(today, 'month') // compare by month+year
+  );
+  const currentBal: number | null = currentEntry ? currentEntry.balance : null;
+
+  console.log('Formatted current month:', today);
+  console.log('Formatted current entry:', currentEntry);
+  console.log('Formatted current balance:', currentBal);
+
+  const balElem = document.querySelector('.estimated-payoff .bal-p') as HTMLElement | null;
+  if (balElem) {
+    balElem.textContent = currentBal !== null ? `₦${currentBal.toLocaleString()}` : '—'; // show balance or dash
+  }
+
+  document.getElementById('downloadCsvBtn')?.addEventListener('click', () => {
+    const csvHeaders = [
+      'Payment Date',
+      'Monthly Repayment',
+      'Interest',
+      'Principal',
+      'Current Balance',
+    ];
+    const csvRows = schedule.map((entry) =>
+      [entry.date, entry.monthlyPayment, entry.interest, entry.principal, entry.balance].join(',')
+    );
+
+    const csvContent = [csvHeaders.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'loan_schedule.csv';
+    link.click();
+  });
+}
+
+// Preprocessing the user input functionality
 export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
   const form = document.querySelector('form[name="loanDetailsForm"]') as HTMLFormElement;
   if (!form) {
@@ -364,164 +558,6 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     renderScheduleTable();
   });
 };
-
-function renderSummaryTable() {
-  summaryPlaceholder.innerHTML = `
-    <div class="loan-summary-table js-summary-table">
-      <table>
-        <caption>
-          Loan Summary Result
-        </caption>
-        <thead>
-          <tr>
-            <th colspan="2">Payment Breakdown</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>Monthly Repayment</td>
-            <td>2400000</td>
-          </tr>
-          <tr>
-            <td>Total Loan Payment</td>
-            <td>300000</td>
-          </tr>
-          <tr>
-            <td>Loan Amount</td>
-            <td>300000</td>
-          </tr>
-          <tr>
-            <td>Total Interest</td>
-            <td>150000</td>
-          </tr>
-          <tr>
-            <td>Number of Installments</td>
-            <td>12</td>
-          </tr>
-          <tr>
-            <td>Interest Rate per/anum</td>
-            <td>15</td>
-          </tr>
-          <tr>
-            <td>Loan Duration (months)</td>
-            <td>150000</td>
-          </tr>
-          <tr>
-            <td>First Payment Date</td>
-            <td>May-2025</td>
-          </tr>
-          <tr>
-            <td>Last Payment Date</td>
-            <td>June-2026</td>
-          </tr>
-        </tbody>
-
-        <tfoot>
-          <tr>
-            <td colspan="2" style="text-align: right">
-              <em>Download to Excel</em>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  `;
-}
-
-function renderScheduleTable() {
-  if (!document.querySelector('.js-loan-schedule-table')) {
-    schedulePlaceholder.innerHTML = `
-    <div class="loan-schedule-table js-loan-schedule-table">
-      <div class="estimated-payoff">
-        <h1>Estimated payoff date</h1>
-        <p>-</p>
-      </div>
-
-      <table>
-        <caption>Amortisation Schedule</caption>
-        <thead>
-          <tr class="schedule-th">
-            <th>Payment Date</th>
-            <th>Monthly Repayment</th>
-            <th>Interest</th>
-            <th>Principal</th>
-            <th>Current Balance</th>
-          </tr>
-        </thead>
-        <tbody id="schedule-body"></tbody>
-        <tfoot>
-          <tr>
-          <td class="schedule-th">Payment Date</td>
-            <td>Monthly Repayment</td>
-            <td>Interest</td>
-            <td>Principal</td>
-            <td>Current Balance</td>
-          </tr>
-            <td colspan="5" style="text-align:right">
-              <button id="downloadCsvBtn">
-                ⬇️<em>Download to CSV</em>
-              </button>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>`;
-  }
-
-  const tbody = document.getElementById('schedule-body')!;
-  if (!schedule.length) {
-    tbody.innerHTML =
-      '<tr><td colspan="5" style="text-align:center">No schedule data yet</td></tr>';
-    return;
-  }
-
-  const rows = schedule
-    .map((e) => {
-      const now = dayjs();
-      const rowClass = dayjs(e.date, 'D/MM/YYYY').isSame(now, 'month')
-        ? 'current-payment'
-        : dayjs(e.date, 'D/MM/YYYY').isBefore(now, 'month')
-        ? 'past-payment'
-        : 'future-payment';
-
-      return `
-      <tr class="${rowClass}">
-        <td>${e.date}</td>
-        <td>₦${e.monthlyPayment.toLocaleString()}</td>
-        <td>₦${e.interest.toLocaleString()}</td>
-        <td>₦${e.principal.toLocaleString()}</td>
-        <td>₦${e.balance.toLocaleString()}</td>
-      </tr>`;
-    })
-    .join('');
-  tbody.innerHTML = rows;
-
-  // update payoff date
-  const pDate = schedule.at(-1)!.date ?? '';
-  const formatPDate = pDate ? dayjs(pDate, 'D/MM/YYYY').format('D MMMM, YYYY') : '';
-  (document.querySelector('.estimated-payoff p') as HTMLElement).textContent = formatPDate;
-
-  document.getElementById('downloadCsvBtn')?.addEventListener('click', () => {
-    const csvHeaders = [
-      'Payment Date',
-      'Monthly Repayment',
-      'Interest',
-      'Principal',
-      'Current Balance',
-    ];
-    const csvRows = schedule.map((entry) =>
-      [entry.date, entry.monthlyPayment, entry.interest, entry.principal, entry.balance].join(',')
-    );
-
-    const csvContent = [csvHeaders.join(','), ...csvRows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'loan_schedule.csv';
-    link.click();
-  });
-}
 
 // Render the data on the page
 document.addEventListener('DOMContentLoaded', () => {
