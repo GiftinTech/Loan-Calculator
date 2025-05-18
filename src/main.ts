@@ -1,4 +1,5 @@
 import { Chart } from 'chart.js/auto';
+import dayjs from 'dayjs';
 
 let myChart: Chart | null = null;
 
@@ -434,9 +435,11 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     }
 
     const loanResult = calculateLoan(loanDetails);
+    const formatStartDate = dayjs(loanResult.start).format('MMMM DD, YYYY');
+    const formatLastDate = dayjs(loanResult.last).format('MMM D, YYYY');
     console.log(loanResult);
-    console.log(loanResult.start.toLocaleDateString());
-    console.log(loanResult.last.toLocaleDateString());
+    console.log(formatStartDate);
+    console.log(formatLastDate);
 
     // Display loanDetails in a chart
     myChart = new Chart(ctx, {
