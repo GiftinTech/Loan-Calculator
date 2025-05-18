@@ -4,46 +4,18 @@ let myChart: Chart | null = null;
 
 // DOM
 // input elements
-const amountInput = document.querySelector(
-  '.js-loan-amount'
-) as HTMLInputElement;
-const interestInput = document.querySelector(
-  '.js-loan-interest'
-) as HTMLInputElement;
-const loanTermYearsInput = document.querySelector(
-  '.js-loan-term-years'
-) as HTMLInputElement;
-const loanTermMonthsInput = document.querySelector(
-  '.js-loan-term-monthly'
-) as HTMLInputElement;
-const startDateInput = document.querySelector(
-  '.js-loan-start-date'
-) as HTMLInputElement;
+const amountInput = document.querySelector('.js-loan-amount') as HTMLInputElement;
+const interestInput = document.querySelector('.js-loan-interest') as HTMLInputElement;
+const loanTermYearsInput = document.querySelector('.js-loan-term-years') as HTMLInputElement;
+const loanTermMonthsInput = document.querySelector('.js-loan-term-month') as HTMLInputElement;
+const startDateInput = document.querySelector('.js-loan-start-date') as HTMLInputElement;
+
+const formPlaceholder = document.querySelector('.js-form-placeholder') as HTMLDivElement;
+const summaryPlaceholder = document.querySelector('.js-summary-placeholder') as HTMLDivElement;
+const schedulePlaceholder = document.querySelector('.js-schedule-placeholder') as HTMLDivElement;
 
 // button element
-const calculateButton = document.querySelector(
-  '.js-calculate-loan'
-) as HTMLInputElement;
-
-// Nav click events
-const formElement = document.querySelector(
-  '.loan-details-wrapper form'
-) as HTMLFormElement;
-const loanSummaryNav = document.querySelector(
-  '.js-loan-summary-nav'
-) as HTMLLIElement;
-const calculateLoanNav = document.querySelector(
-  '.js-calculate-nav'
-) as HTMLLIElement;
-const loanScheduleNav = document.querySelector(
-  '.js-loan-schedule-nav'
-) as HTMLLIElement;
-const summaryTable = document.querySelector(
-  '.loan-summary-table'
-) as HTMLTableElement;
-const scheduleTable = document.querySelector(
-  '.loan-schedule-table'
-) as HTMLTableElement;
+const calculateButton = document.querySelector('.js-calculate-loan') as HTMLInputElement;
 
 // Type guard for missing elements
 if (
@@ -54,11 +26,12 @@ if (
   !calculateButton ||
   !startDateInput
 ) {
-  throw new Error('One or more input elements are missing in the DOM.');
+  // throw new Error('One or more input elements are missing in the DOM.');
+  renderForm();
 }
 
 // type aliases
-type LoanDetails = {
+export type LoanDetails = {
   amount: number;
   interestRate: number;
   loanTermYears?: number;
@@ -73,6 +46,7 @@ type PaymentDetails = {
   totalPayment: number;
   principal: number;
   calculatedYears: number;
+  calculatedMonths: number;
   calculatedInterest: number;
   start: Date;
   last: Date;
@@ -80,7 +54,7 @@ type PaymentDetails = {
 
 // Utility function: formats figures with commas
 /** remove every comma before calculations */
-const stripCommas = (val: string) => val.replace(/,/g, '');
+export const stripCommas = (val: string) => val.replace(/,/g, '');
 
 function numberWithCommas(x: number | string) {
   const parts = x.toString().split('.');
@@ -89,61 +63,42 @@ function numberWithCommas(x: number | string) {
 }
 
 /* ---------- live formatting ---------- */
-amountInput.addEventListener('input', () => {
-  // caret position bookkeeping so typing feels natural
-  const start = amountInput.selectionStart ?? 0;
+export function initLoanCalculatorDOM() {
+  if (!amountInput) return;
 
-  // raw numeric string without commas
-  const raw = stripCommas(amountInput.value);
+  amountInput.addEventListener('input', () => {
+    // caret position bookkeeping so typing feels natural
+    const start = amountInput.selectionStart ?? 0;
 
-  // bail if user deleted everything
-  if (raw === '') {
-    amountInput.value = '';
-    return;
-  }
+    // raw numeric string without commas
+    const raw = stripCommas(amountInput.value);
 
-  // format and re-set the value
-  amountInput.value = numberWithCommas(raw);
-
-  /* restore caret near the end; optional: smarter caret logic */
-  amountInput.setSelectionRange(
-    amountInput.value.length,
-    amountInput.value.length
-  );
-});
-
-/* Assure perfect formatting when user leaves field */
-amountInput.addEventListener('blur', () => {
-  amountInput.value = numberWithCommas(amountInput.value);
-}); // ChatGPT code
-
-const toggleNavLink = (
-  clickEvent: HTMLElement,
-  value: HTMLElement,
-  element1: HTMLElement,
-  element2: HTMLElement
-): void => {
-  if (!clickEvent) return;
-
-  clickEvent.addEventListener('click', () => {
-    if (!value) {
-      console.error('table element not found.');
+    // bail if user deleted everything
+    if (raw === '') {
+      amountInput.value = '';
       return;
     }
 
-    if (
-      getComputedStyle(element1).display === 'block' ||
-      getComputedStyle(element2).display === 'block'
-    ) {
-      element1.style.display = 'none';
-      element2.style.display = 'none';
-      value.style.display = 'block';
-    }
+    // format and re-set the value
+    amountInput.value = numberWithCommas(raw);
+
+    /* restore caret near the end; optional: smarter caret logic */
+    amountInput.setSelectionRange(amountInput.value.length, amountInput.value.length);
   });
-};
+
+  /* Assure perfect formatting when user leaves field */
+  amountInput.addEventListener('blur', () => {
+    amountInput.value = numberWithCommas(amountInput.value);
+  }); // ChatGPT code
+}
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initLoanCalculatorDOM();
+  });
+}
 
 // Loan calculation functionality
-const calculateLoan = ({
+export const calculateLoan = ({
   amount,
   interestRate,
   loanTermYears,
@@ -166,8 +121,7 @@ const calculateLoan = ({
 
   const monthlyInterest = calculatedInterest * principal;
   const interestGrowth = Math.pow(1 + calculatedInterest, calculatedYears);
-  const monthly =
-    (principal * interestGrowth * calculatedInterest) / (interestGrowth - 1);
+  const monthly = (principal * interestGrowth * calculatedInterest) / (interestGrowth - 1);
 
   const total = monthly * calculatedYears;
   const interest = total - principal;
@@ -179,6 +133,7 @@ const calculateLoan = ({
     totalPayment: parseFloat(total.toFixed(2)),
     principal,
     calculatedYears,
+    calculatedMonths,
     calculatedInterest,
     start: loanStart,
     last: lastPayment,
@@ -186,7 +141,7 @@ const calculateLoan = ({
 };
 
 //Preprocessing the user input functionality
-const inputPreprocessing = (ctx: HTMLCanvasElement) => {
+export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
   calculateButton.addEventListener('click', (e) => {
     e.preventDefault();
 
@@ -198,6 +153,9 @@ const inputPreprocessing = (ctx: HTMLCanvasElement) => {
       loanTermMonths: parseInt(loanTermYearsInput.value, 10),
       startDate: startDateInput.value,
     };
+
+    // store the calculateLoan(loanDetails) output in loanResult
+    const loanResult = calculateLoan(loanDetails);
 
     //input validation
     const isValidInput =
@@ -214,8 +172,6 @@ const inputPreprocessing = (ctx: HTMLCanvasElement) => {
       loanDetails.startDate !== '';
 
     if (isValidInput) {
-      const loanResult = calculateLoan(loanDetails);
-
       // Destroy previous chart before creating a new one
       if (myChart) {
         myChart.destroy();
@@ -249,9 +205,7 @@ const inputPreprocessing = (ctx: HTMLCanvasElement) => {
 
       // Displays the chart details in figures for UX
       if (myChart) {
-        const loanPrincipal = document.querySelector(
-          '.js-loan-chart-amount'
-        ) as HTMLDivElement;
+        const loanPrincipal = document.querySelector('.js-loan-chart-amount') as HTMLDivElement;
         loanPrincipal.innerHTML = `
         <p>Loan Amount</p>
         <span style="color: rgb(31, 52, 243); font-weight: bolder;">₦${numberWithCommas(
@@ -259,9 +213,7 @@ const inputPreprocessing = (ctx: HTMLCanvasElement) => {
         )}</span>
         `;
 
-        const totalInterest = document.querySelector(
-          '.js-total-chart-interest'
-        ) as HTMLDivElement;
+        const totalInterest = document.querySelector('.js-total-chart-interest') as HTMLDivElement;
         totalInterest.innerHTML = `
         <p>Total Interest Payable</p>
         <span style="color:rgb(247, 47, 91); font-weight: bolder;">₦${numberWithCommas(
@@ -269,14 +221,10 @@ const inputPreprocessing = (ctx: HTMLCanvasElement) => {
         )}</span>
         `;
 
-        const totalPayment = document.querySelector(
-          '.js-total-chart-payment'
-        ) as HTMLDivElement;
+        const totalPayment = document.querySelector('.js-total-chart-payment') as HTMLDivElement;
         totalPayment.innerHTML = `
         <p>Total Payment</p>
-        <span style="font-weight: bolder;">₦${numberWithCommas(
-          loanResult.totalPayment
-        )}</span>
+        <span style="font-weight: bolder;">₦${numberWithCommas(loanResult.totalPayment)}</span>
         `;
       }
     } else {
@@ -287,7 +235,12 @@ const inputPreprocessing = (ctx: HTMLCanvasElement) => {
       }
     }
 
+    // display calculateLoan(LoanDetails) output
+    console.log(loanResult);
+
     // display start date and end date
+    console.log(loanResult.start);
+    console.log(loanResult.last);
 
     // Navigate the input with keyboard
     const loanInputs: HTMLInputElement[] = [
@@ -323,12 +276,295 @@ const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     loanTermYearsInput.value = '';
     loanTermMonthsInput.value = '';
     startDateInput.value = '';
+
+    //call renderForm();
   });
 };
 
-// Render the data on the page
+const toggleNavLink = (
+  clickElement: HTMLLIElement,
+  value: HTMLElement,
+  element1: HTMLElement,
+  element2: HTMLElement
+): void => {
+  if (!clickElement) return;
 
+  clickElement.addEventListener('click', () => {
+    if (!value || !element1 || !element2) return; // safety net
+
+    // hide others, show the clicked one
+    element1.style.display = 'none';
+    element2.style.display = 'none';
+    value.style.display = 'block';
+  });
+};
+
+// Render form
+
+function renderForm() {
+  const formHTML = `
+    <form action="https://httpbin.org/get" method="get" name="loanDetailsForm">
+      <label class="form-header">Calculate loan interest</label>
+
+      <label for="loan-amount"> Loan Amount </label>
+      <div class="amount-wrapper">
+        <span class="naira-symbol">₦</span>
+        <input
+          type="text"
+          id="loan-amount"
+          class="loan-input amount-input js-loan-amount"
+          placeholder="Enter loan amount"
+          required
+        />
+      </div>
+
+      <label for="loan-interest"> Annual Interest Rate </label>
+      <div class="interest-wrapper">
+        <span class="percentage-symbol">%</span>
+        <input
+          type="number"
+          id="loan-interest"
+          class="loan-input js-loan-interest"
+          placeholder="Enter loan Interest"
+          required
+        />
+      </div>
+
+      <label> Loan Term <span class="per-term">per/anum</span></label>
+      <div class="term-wrapper">
+        <span class="years-symbol">year(s)</span>
+        <input
+          type="number"
+          class="loan-input js-loan-term-years"
+          placeholder="Enter loan term in"
+        />
+      </div>
+
+      <label> Loan Term <span class="per-term">per/month</span></label>
+      <div class="term-wrapper">
+        <span class="years-symbol">month(s)</span>
+        <input
+          type="number"
+          class="loan-input js-loan-term-month"
+          placeholder="Enter loan term in"
+        />
+      </div>
+
+      <!-- **** Ignore the commented blocks, hehe **** -->
+      <!-- <label> Loan Term </label>
+      <select name="loan-term" class="loan-term js-loan-term">
+        <option value="monthly" selected>Monthly</option>
+        <option value="quarterly">Quarterly</option>
+        <option value="semi-annually">Semi-Annually</option>
+        <option value="yearly">Annually</option>
+      </select> -->
+
+      <!--      <div>
+        <label for="loan-term"> Loan Term </label>
+        <input
+          type="text"
+          name="loan-term"
+          id="loan-term"
+          list="loan-term-list"
+        />
+        <datalist id="loan-term-list">
+          <option value="Monthly"></option>
+          <option value="Quarterly"></option>
+          <option value="Semi-Annually"></option>
+          <option value="Yearly"></option>
+        </datalist>
+      </div> -->
+
+      <label for="start-date"> Start Date </label>
+      <input type="date" class="loan-input loan-start-date js-loan-start-date" />
+
+      <input
+        class="loan-input calculate-loan js-calculate-loan"
+        value="Calculate"
+        type="submit"
+      />
+    </form>
+  `;
+
+  formPlaceholder.innerHTML = formHTML;
+}
+
+function renderSummaryTable() {
+  summaryPlaceholder.innerHTML = `
+    <div class="loan-summary-table js-summary-table">
+      <table>
+        <caption>
+          Loan Summary Result
+        </caption>
+        <thead>
+          <tr>
+            <th colspan="2">Payment Breakdown</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>Monthly Repayment</td>
+            <td>2400000</td>
+          </tr>
+          <tr>
+            <td>Total Loan Payment</td>
+            <td>300000</td>
+          </tr>
+          <tr>
+            <td>Loan Amount</td>
+            <td>300000</td>
+          </tr>
+          <tr>
+            <td>Total Interest</td>
+            <td>150000</td>
+          </tr>
+          <tr>
+            <td>Number of Installments</td>
+            <td>12</td>
+          </tr>
+          <tr>
+            <td>Interest Rate per/anum</td>
+            <td>15</td>
+          </tr>
+          <tr>
+            <td>Loan Duration (months)</td>
+            <td>150000</td>
+          </tr>
+          <tr>
+            <td>First Payment Date</td>
+            <td>May-2025</td>
+          </tr>
+          <tr>
+            <td>Last Payment Date</td>
+            <td>June-2026</td>
+          </tr>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td colspan="2" style="text-align: right">
+              <em>Download to Excel</em>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  `;
+}
+
+function renderScheduleTable() {
+  schedulePlaceholder.innerHTML = `
+    <div class="loan-schedule-table js-loan-schedule-table">
+      <div class="estimated-payoff">
+        <h1>Estimated payoff date</h1>
+        <p>May 16, 2027</p>
+      </div>
+      <table>
+        <caption>
+          Amortisation Schedule
+        </caption>
+        <thead>
+          <tr class="schedule-th">
+            <th>Payment Date</th>
+            <th>Monthly Repayment</th>
+            <th>Interest</th>
+            <th>Current Balance</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr>
+            <td>1/12/2025</td>
+            <td>4000</td>
+            <td>500</td>
+            <td>15000</td>
+          </tr>
+          <tr class="schedule-th">
+            <th>Payment Date</th>
+            <th>Monthly Repayment</th>
+            <th>Interest</th>
+            <th>Current Balance</th>
+          </tr>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <td colspan="4" style="text-align: right">
+              <em>Download to Excel</em>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    `;
+}
+
+// Render the data on the page
 document.addEventListener('DOMContentLoaded', () => {
+  // Step 1: Render content first
+  renderForm();
+  renderSummaryTable();
+  renderScheduleTable();
+
+  // Step 2: Requery elements *after* they’ve been injected
+  const formElement = document.querySelector('.js-form-placeholder form') as HTMLElement;
+  const summaryTable = document.querySelector('.js-summary-placeholder div') as HTMLElement;
+  const scheduleTable = document.querySelector('.js-schedule-placeholder div') as HTMLElement;
+
+  const loanSummaryNav = document.querySelector('.js-loan-summary-nav') as HTMLLIElement;
+  const calculateLoanNav = document.querySelector('.js-calculate-nav') as HTMLLIElement;
+  const loanScheduleNav = document.querySelector('.js-loan-schedule-nav') as HTMLLIElement;
+
+  // Step 3: Set up navigation logic
   toggleNavLink(loanSummaryNav, summaryTable, formElement, scheduleTable);
   toggleNavLink(calculateLoanNav, formElement, summaryTable, scheduleTable);
   toggleNavLink(loanScheduleNav, scheduleTable, formElement, summaryTable);
