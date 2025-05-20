@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   root: '.', // use current directory as root
-  base: '/Loan-Calculator/', // ensures relative paths
+  base: './', // ensures relative paths
   build: {
     outDir: 'dist', // output directory
     emptyOutDir: true, // clean before build
