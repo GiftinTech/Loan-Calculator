@@ -76,10 +76,15 @@ const schedule: ScheduleEntry[] = [];
 /** remove every comma before calculations */
 export const stripCommas = (val: string) => val.replace(/,/g, '');
 
-function numberWithCommas(x: number | string) {
-  const parts = x.toString().split('.');
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return parts.join('.');
+function numberWithCommas(x: number | string, noDecimals = false) {
+  let num = typeof x === 'number' ? x : parseFloat(x.replace(/,/g, ''));
+  let formatted = num.toLocaleString(
+    undefined,
+    noDecimals
+      ? { maximumFractionDigits: 0 }
+      : { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+  );
+  return formatted;
 }
 
 function initLiveFormatting(el: HTMLInputElement) {
@@ -89,9 +94,12 @@ function initLiveFormatting(el: HTMLInputElement) {
       el.value = '';
       return;
     }
-    el.value = numberWithCommas(raw);
+    // Only show commas, no decimals, while typing
+    el.value = numberWithCommas(raw, true);
   });
-  el.addEventListener('blur', () => (el.value = numberWithCommas(el.value)));
+
+  // On blur, format with decimals
+  el.addEventListener('blur', () => (el.value = numberWithCommas(el.value, false)));
 }
 
 // Loan calculation functionality
@@ -166,7 +174,7 @@ function renderForm() {
 
       <label for="loan-amount"> Loan Amount </label>
       <div class="amount-wrapper">
-        <span class="naira-symbol">₦</span>
+        <span class="naira-symbol">&#8358;</span>
         <input
           type="text"
           id="loan-amount"
@@ -285,27 +293,27 @@ function renderSummaryTable() {
       (e) => `
       <tr>
         <td>Monthly Repayment</td>
-        <td>${e.monthlyPayment.toLocaleString()}</td>
+        <td>&#8358;${numberWithCommas(e.monthlyPayment)}</td>
       </tr>
       <tr>
         <td>Total Loan Payment</td>
-        <td>${e.totalPayment.toLocaleString()}</td>
+        <td>&#8358;${numberWithCommas(e.totalPayment)}</td>
       </tr>
       <tr>
         <td>Loan Amount</td>
-        <td>${e.principal.toLocaleString()}</td>
+        <td>&#8358;${numberWithCommas(e.principal)}</td>
       </tr>
       <tr>
         <td>Total Interest</td>
-        <td>${e.totalInterest.toLocaleString()}</td>
+        <td>&#8358;${numberWithCommas(e.totalInterest)}</td>
       </tr>
       <tr>
         <td>Number of Installments</td>
-        <td>12</td>
+        <td>${numberWithCommas(e.calculatedYears * 12 + e.calculatedMonths)}</td>
       </tr>
       <tr>
         <td>Interest Rate per annum</td>
-        <td>${e.interestRate.toLocaleString()}</td>
+        <td>${numberWithCommas(e.interestRate)}%</td>
       </tr>
       <tr>
         <td>Loan Term</td>
@@ -418,11 +426,11 @@ function renderScheduleTable() {
 
       return `
       <tr class="${rowClass}">
-        <td>${e.date}</td>
-        <td>₦${e.monthlyPayment.toLocaleString()}</td>
-        <td>₦${e.interest.toLocaleString()}</td>
-        <td>₦${e.principal.toLocaleString()}</td>
-        <td>₦${e.balance.toLocaleString()}</td>
+        <td>${dayjs(e.date).format('D/M/YYYY')}</td>
+        <td>&#8358;${numberWithCommas(e.monthlyPayment)}</td>
+        <td>&#8358;${numberWithCommas(e.interest)}</td>
+        <td>&#8358;${numberWithCommas(e.principal)}</td>
+        <td>&#8358;${numberWithCommas(e.balance)}</td>
       </tr>`;
     })
     .join('');
@@ -446,7 +454,7 @@ function renderScheduleTable() {
 
   const balElem = document.querySelector('.estimated-payoff .bal-p') as HTMLElement | null;
   if (balElem) {
-    balElem.textContent = currentBal !== null ? `₦${currentBal.toLocaleString()}` : '—'; // show balance or dash
+    balElem.textContent = currentBal !== null ? `&#8358;${currentBal.toLocaleString()}` : '—'; // show balance or dash
   }
 
   document.getElementById('downloadCsvBtn')?.addEventListener('click', () => {
@@ -585,15 +593,17 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     // Displays the chart details in figures for UX
     (
       document.querySelector('.js-loan-chart-amount') as HTMLDivElement
-    ).innerHTML = `<p>Loan Amount</p><span>₦${numberWithCommas(loanResult.principal)}</span>`;
+    ).innerHTML = `<p>Loan Amount</p><span>&#8358;${numberWithCommas(loanResult.principal)}</span>`;
     (
       document.querySelector('.js-total-chart-interest') as HTMLDivElement
-    ).innerHTML = `<p>Total Interest</p><span>₦${numberWithCommas(
+    ).innerHTML = `<p>Total Interest</p><span>&#8358;${numberWithCommas(
       loanResult.totalInterest
     )}</span>`;
     (
       document.querySelector('.js-total-chart-payment') as HTMLDivElement
-    ).innerHTML = `<p>Total Payment</p><span>₦${numberWithCommas(loanResult.totalPayment)}</span>`;
+    ).innerHTML = `<p>Total Payment</p><span>&#8358;${numberWithCommas(
+      loanResult.totalPayment
+    )}</span>`;
 
     // Clear inputs after each calculation
     inputs.forEach((inp) => (inp.value = ''));
@@ -604,7 +614,7 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
 
     summary.push({
       monthlyPayment: +loanResult.monthlyPayment.toFixed(2),
-      totalPayment: +loanResult.totalInterest.toFixed(2),
+      totalPayment: +loanResult.totalPayment.toFixed(2),
       principal: +loanResult.principal.toFixed(2),
       totalInterest: +loanResult.totalInterest.toFixed(2),
       installmentNum: 12,
@@ -624,16 +634,16 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
 
     for (let i = 0; i < totalMonths; i++) {
       const currentDate = formatStartDate.add(i, 'month');
-      const interest = balance * loanResult.calculatedInterest;
-      const principal = loanResult.monthlyPayment - interest;
-      balance = balance - principal;
+      const interest = +(balance * loanResult.calculatedInterest).toFixed(2);
+      const principal = +(loanResult.monthlyPayment - interest).toFixed(2);
+      balance = +(balance - principal).toFixed(2);
 
       schedule.push({
         date: currentDate.toISOString(),
         monthlyPayment: +loanResult.monthlyPayment.toFixed(2),
-        interest: +interest.toFixed(2),
-        principal: +principal.toFixed(2),
-        balance: +balance.toFixed(2) > 0 ? +balance.toFixed(2) : 0,
+        interest: interest,
+        principal: principal,
+        balance: balance > 0 ? balance : 0,
       });
     }
 
