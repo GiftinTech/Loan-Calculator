@@ -189,26 +189,20 @@ function renderForm() {
       </div>
 
       <label> Loan Term <span class="per-term">per/anum</span></label>
-      <div class="term-wrapper">
-        <span class="years-symbol">year(s)</span>
         <input
           type="number"
           data-optional
           class="loan-input js-loan-term-years"
           placeholder="Enter loan term in"
         />
-      </div>
 
       <label> Loan Term <span class="per-term">per/month</span></label>
-      <div class="term-wrapper">
-        <span class="years-symbol">month(s)</span>
         <input
           type="number"
           data-optional
           class="loan-input js-loan-term-month"
           placeholder="Enter loan term in"
         />
-      </div>
       
       <label for="start-date"> Start Date </label>
       <input type="date" class="loan-input loan-start-date js-loan-start-date" />
@@ -222,6 +216,36 @@ function renderForm() {
   `;
 
   formPlaceholder.innerHTML = formHTML;
+  // --- Auto input rendering logic ---
+  const yearsInput = document.querySelector('.js-loan-term-years') as HTMLInputElement;
+  const monthsInput = document.querySelector('.js-loan-term-month') as HTMLInputElement;
+
+  // When months is filled, show equivalent years as placeholder in years input
+  monthsInput.addEventListener('input', () => {
+    const months = parseInt(monthsInput.value, 10);
+    if (!isNaN(months) && months > 0) {
+      const years = Math.floor(months / 12);
+      const remMonths = months % 12;
+      yearsInput.placeholder =
+        years > 0 && remMonths > 0
+          ? `${years} year(s) ${remMonths} month(s)`
+          : years > 0
+          ? `${years} year(s)`
+          : `${remMonths} month(s)`;
+    } else {
+      yearsInput.placeholder = 'Enter loan term in';
+    }
+  });
+
+  // When years is filled, show equivalent months as placeholder in months input
+  yearsInput.addEventListener('input', () => {
+    const years = parseInt(yearsInput.value, 10);
+    if (!isNaN(years) && years > 0) {
+      monthsInput.placeholder = `${years * 12} month(s)`;
+    } else {
+      monthsInput.placeholder = 'Enter loan term in';
+    }
+  });
 }
 
 // Render summary table

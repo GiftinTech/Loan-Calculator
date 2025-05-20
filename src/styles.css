@@ -104,15 +104,13 @@ label {
 }
 
 .amount-wrapper,
-.interest-wrapper,
-.term-wrapper {
+.interest-wrapper {
   position: relative;
   width: 100%;
 }
 
 .naira-symbol,
-.percentage-symbol,
-.years-symbol {
+.percentage-symbol {
   position: absolute;
   top: 40%;
   transform: translateY(-50%);
@@ -127,10 +125,6 @@ label {
 }
 .percentage-symbol {
   right: 5px;
-}
-.years-symbol {
-  right: 5px;
-  font-size: 8px;
 }
 
 .per-term {
