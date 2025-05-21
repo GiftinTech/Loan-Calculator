@@ -88,10 +88,23 @@ function numberWithCommas(x: number | string, noDecimals = false) {
 }
 
 function initLiveFormatting(el: HTMLInputElement) {
-  el.addEventListener('input', () => {
+  el.addEventListener('input', (event) => {
     const raw = stripCommas(el.value);
     if (!raw) {
       el.value = '';
+      return;
+    }
+    // Check for non-numeric input (excluding commas)
+    if (!/^\d+$/.test(raw)) {
+      const isBackspaceorDelete =
+        (event as InputEvent).inputType === 'deleteContentBackward' ||
+        (event as InputEvent).inputType === 'deleteContentForward';
+      if (!isBackspaceorDelete) {
+        console.log('letters not allowed, please input number instead');
+      }
+
+      const digitsOnly = raw.replace(/\D+/g, '');
+      el.value = numberWithCommas(digitsOnly, true);
       return;
     }
     // Only show commas, no decimals, while typing
@@ -99,7 +112,14 @@ function initLiveFormatting(el: HTMLInputElement) {
   });
 
   // On blur, format with decimals
-  el.addEventListener('blur', () => (el.value = numberWithCommas(el.value, false)));
+  el.addEventListener('blur', () => {
+    const raw = stripCommas(el.value);
+    if (!raw || !/^\d+$/.test(raw)) {
+      el.value = '';
+      return;
+    }
+    el.value = numberWithCommas(raw, false);
+  });
 }
 
 // Loan calculation functionality
@@ -170,6 +190,8 @@ const toggleNavLink = (
 function renderForm() {
   const formHTML = `
     <form action="https://httpbin.org/get" method="get" name="loanDetailsForm">
+      <div class="currency-choice">Currency</div>
+
       <label class="form-header">Calculate loan interest</label>
 
       <label for="loan-amount"> Loan Amount </label>
@@ -396,14 +418,19 @@ function renderScheduleTable() {
     return;
   }
 
+  const today = dayjs();
+  let foundCurrent = false;
   tbody.innerHTML = schedule
     .map((e) => {
-      const today = dayjs();
-      const rowClass = dayjs(e.date).isSame(today, 'month')
-        ? 'current-payment'
-        : dayjs(e.date).isBefore(today, 'month')
-        ? 'past-payment'
-        : 'future-payment';
+      let rowClass = '';
+      if (!foundCurrent && dayjs(e.date).isAfter(today, 'month')) {
+        rowClass = 'current-payment';
+        foundCurrent = true;
+      } else if (dayjs(e.date).isBefore(today, 'month')) {
+        rowClass = 'past-payment';
+      } else {
+        rowClass = 'future-payment';
+      }
       return `
       <tr class="${rowClass}">
         <td>${dayjs(e.date).format('D/M/YYYY')}</td>
@@ -423,7 +450,14 @@ function renderScheduleTable() {
   const currentEntry = schedule.find((e) => dayjs(e.date).isSame(dayjs(), 'month'));
   const balElem = document.querySelector('.estimated-payoff .bal-p') as HTMLElement | null;
   if (balElem) {
-    balElem.textContent = currentEntry ? `₦${numberWithCommas(currentEntry.balance)}` : '—';
+    if (currentEntry) {
+      balElem.innerHTML = `&#8358;${numberWithCommas(currentEntry.balance)}`;
+    } else if (schedule.length) {
+      // Show last balance if no current month payment
+      balElem.innerHTML = `&#8358;${numberWithCommas(schedule[schedule.length - 1].balance)}`;
+    } else {
+      balElem.textContent = '—';
+    }
   }
 
   // CSV Download

@@ -132,6 +132,19 @@ label {
   font-size: 8px;
 }
 
+.currency-choice {
+  color: #fff;
+  font-weight: bold;
+  font-size: 9px;
+  border: none;
+  border-radius: 6px;
+  background-color: #000;
+  padding: 4px 10px;
+  width: 60px;
+  cursor: pointer;
+  margin: -20px 0 30px;
+}
+
 .amount-input {
   padding-left: 18px;
 }
@@ -250,7 +263,14 @@ tr {
 
 .loan-schedule-table {
   text-align: center;
+  overflow-x: scroll;
+  width: 100%;
   height: auto;
+}
+
+.loan-schedule-table table {
+  min-width: 400px;
+  border-collapse: collapse;
 }
 
 .loan-schedule-table .estimated-payoff {
@@ -303,20 +323,6 @@ tr {
   flex-direction: column;
   align-items: flex-start;
   row-gap: 1.5rem;
-}
-
-.currency-choice {
-  color: #fff;
-  font-weight: bold;
-  font-size: 9px;
-  border: none;
-  border-radius: 6px;
-  background-color: #000;
-  padding: 4px 7px;
-  margin-top: 5px;
-  margin-right: 5px;
-  align-self: flex-end;
-  cursor: pointer;
 }
 
 .canvas-container {
