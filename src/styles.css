@@ -263,12 +263,12 @@ tr {
 
 .loan-schedule-table {
   text-align: center;
-  overflow-x: scroll;
-  width: 100%;
   height: auto;
 }
 
 .loan-schedule-table table {
+  overflow-x: scroll;
+  width: 100%;
   min-width: 400px;
   border-collapse: collapse;
 }
@@ -310,6 +310,51 @@ tr {
 .current-payment {
   background-color: #dbeafe;
   font-weight: bold;
+}
+
+/* See More/Less button */
+#seeMoreBtn {
+  background: var(--PRIMARY);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 100px;
+  transition: background 0.2s;
+}
+
+#seeMoreBtn:hover,
+#seeMoreBtn:focus {
+  background: var(--PRIMARY-HOVER);
+  border-color: var(--BORDER-HOVER);
+  outline: none;
+}
+
+/* Download buttons */
+#downloadCsvBtn,
+#downloadSummaryCsvBtn {
+  background: var(--SECONDARY);
+  color: var(--MAIN-TEXT);
+  border: none;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#downloadCsvBtn:hover,
+#downloadCsvBtn:focus,
+#downloadSummaryCsvBtn:hover,
+#downloadSummaryCsvBtn:focus {
+  background: var(--PRIMARY-HOVER);
+  border-color: var(--BORDER-HOVER);
+  color: #fff;
+  outline: none;
 }
 
 /* Chart style */

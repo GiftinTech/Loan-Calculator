@@ -190,8 +190,7 @@ const toggleNavLink = (
 function renderForm() {
   const formHTML = `
     <form action="https://httpbin.org/get" method="get" name="loanDetailsForm">
-      <div class="currency-choice">Currency</div>
-
+     <div class="currency-choice">Currency</div>
       <label class="form-header">Calculate loan interest</label>
 
       <label for="loan-amount"> Loan Amount </label>
@@ -299,7 +298,7 @@ function renderSummaryTable() {
             <tr>
               <td colspan="2" style="text-align: right">
                 <button id="downloadSummaryCsvBtn">
-                  ⬇️<em>Download to CSV</em>
+                  <em>Download to CSV</em>
                 </button>
               </td>
             </tr>
@@ -375,8 +374,11 @@ function renderSummaryTable() {
   });
 }
 
+let showAll = false;
 // Render schedule table
 function renderScheduleTable() {
+  const max_rows = 10;
+
   if (!document.querySelector('.js-loan-schedule-table')) {
     schedulePlaceholder.innerHTML = `
       <div class="loan-schedule-table js-loan-schedule-table">
@@ -402,7 +404,7 @@ function renderScheduleTable() {
             <tr>
               <td colspan="5" style="text-align:right">
                 <button id="downloadCsvBtn">
-                  ⬇️<em>Download to CSV</em>
+                  <em>Download to CSV</em>
                 </button>
               </td>
             </tr>
@@ -411,36 +413,39 @@ function renderScheduleTable() {
       </div>`;
   }
 
+  function getRows() {
+    const today = dayjs();
+    let foundCurrent = false;
+    return (showAll ? schedule : schedule.slice(0, max_rows))
+      .map((e) => {
+        let rowClass = '';
+        if (!foundCurrent && dayjs(e.date).isAfter(today, 'month')) {
+          rowClass = 'current-payment';
+          foundCurrent = true;
+        } else if (dayjs(e.date).isBefore(today, 'month')) {
+          rowClass = 'past-payment';
+        } else {
+          rowClass = 'future-payment';
+        }
+        return `
+          <tr class="${rowClass}">
+            <td>${dayjs(e.date).format('D/M/YYYY')}</td>
+            <td>&#8358;${numberWithCommas(e.monthlyPayment)}</td>
+            <td>&#8358;${numberWithCommas(e.interest)}</td>
+            <td>&#8358;${numberWithCommas(e.principal)}</td>
+            <td>&#8358;${numberWithCommas(e.balance)}</td>
+          </tr>`;
+      })
+      .join('');
+  }
+
   const tbody = document.getElementById('schedule-body')!;
   if (!schedule.length) {
     tbody.innerHTML =
       '<tr><td colspan="5" style="text-align:center">No schedule data yet</td></tr>';
-    return;
+  } else {
+    tbody.innerHTML = getRows();
   }
-
-  const today = dayjs();
-  let foundCurrent = false;
-  tbody.innerHTML = schedule
-    .map((e) => {
-      let rowClass = '';
-      if (!foundCurrent && dayjs(e.date).isAfter(today, 'month')) {
-        rowClass = 'current-payment';
-        foundCurrent = true;
-      } else if (dayjs(e.date).isBefore(today, 'month')) {
-        rowClass = 'past-payment';
-      } else {
-        rowClass = 'future-payment';
-      }
-      return `
-      <tr class="${rowClass}">
-        <td>${dayjs(e.date).format('D/M/YYYY')}</td>
-        <td>&#8358;${numberWithCommas(e.monthlyPayment)}</td>
-        <td>&#8358;${numberWithCommas(e.interest)}</td>
-        <td>&#8358;${numberWithCommas(e.principal)}</td>
-        <td>&#8358;${numberWithCommas(e.balance)}</td>
-      </tr>`;
-    })
-    .join('');
 
   // Update payoff and balance
   const payoffDate = schedule.at(-1)?.date
@@ -485,6 +490,28 @@ function renderScheduleTable() {
     link.download = 'loan_schedule.csv';
     link.click();
   });
+
+  // See More/Less button logic
+  let seeMoreBtn = document.getElementById('seeMoreBtn') as HTMLButtonElement | null;
+  // Find the tfoot and its td directly from the table
+  const table = tbody.closest('table');
+  const tfootTd = table?.querySelector('tfoot td');
+
+  if (!seeMoreBtn && schedule.length > max_rows && tfootTd) {
+    const btn = document.createElement('button');
+    btn.id = 'seeMoreBtn';
+    btn.textContent = 'See More';
+    tfootTd.prepend(btn);
+    seeMoreBtn = btn;
+  }
+  if (seeMoreBtn) {
+    seeMoreBtn.textContent = showAll ? 'See Less' : 'See More';
+    seeMoreBtn.onclick = () => {
+      showAll = !showAll;
+      tbody.innerHTML = getRows();
+      seeMoreBtn.textContent = showAll ? 'See Less' : 'See More';
+    };
+  }
 }
 
 // Preprocessing the user input functionality
@@ -565,10 +592,10 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     myChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: [],
+        labels: ['Principal', 'Interest'],
         datasets: [
           {
-            label: 'Loan Payment',
+            label: '',
             data: [loanResult.principal, loanResult.totalInterest],
             borderWidth: 1,
             backgroundColor: ['rgb(31, 52, 243)', 'rgb(247, 47, 91)'],
@@ -578,7 +605,9 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
       },
       options: {
         responsive: true,
-        plugins: { legend: { position: 'bottom' } },
+        plugins: {
+          legend: { display: false },
+        },
         maintainAspectRatio: false,
       },
     });
