@@ -87,28 +87,69 @@ function numberWithCommas(x: number | string, noDecimals = false) {
   return formatted;
 }
 
-function initLiveFormatting(el: HTMLInputElement) {
+function initLiveFormatting(
+  el: HTMLInputElement,
+  errorElem?: HTMLElement,
+  nairaElem?: HTMLElement,
+  borderBottom?: HTMLElement
+) {
   el.addEventListener('input', (event) => {
     const raw = stripCommas(el.value);
+    const isBackspaceorDelete =
+      (event as InputEvent).inputType === 'deleteContentBackward' ||
+      (event as InputEvent).inputType === 'deleteContentForward';
+
+    // If empty, clear and remove errors
     if (!raw) {
       el.value = '';
+      el.classList.remove('invalid');
+      if (nairaElem) nairaElem.classList.remove('invalid');
+      if (errorElem) errorElem.style.display = 'none';
+      if (borderBottom) borderBottom.classList.remove('invalid');
       return;
     }
-    // Check for non-numeric input (excluding commas)
-    if (!/^\d+$/.test(raw)) {
-      const isBackspaceorDelete =
-        (event as InputEvent).inputType === 'deleteContentBackward' ||
-        (event as InputEvent).inputType === 'deleteContentForward';
-      if (!isBackspaceorDelete) {
-        console.log('letters not allowed, please input number instead');
-      }
 
-      const digitsOnly = raw.replace(/\D+/g, '');
-      el.value = numberWithCommas(digitsOnly, true);
+    // Remove non-digits, update value (never NaN)
+    const digitsOnly = raw.replace(/\D+/g, '');
+    if (digitsOnly !== raw) {
+      el.value = digitsOnly ? numberWithCommas(digitsOnly, true) : '';
+      if (!isBackspaceorDelete) {
+        el.classList.add('invalid');
+        if (nairaElem) nairaElem.classList.add('invalid');
+        if (borderBottom) borderBottom.classList.add('invalid');
+        if (errorElem) {
+          errorElem.textContent = 'Please enter numbers only';
+          errorElem.style.display = 'block';
+        }
+      }
+      // After filtering, check if the new value is valid
+      if (digitsOnly && parseFloat(digitsOnly) >= 500) {
+        el.classList.remove('invalid');
+        if (nairaElem) nairaElem.classList.remove('invalid');
+        if (errorElem) errorElem.style.display = 'none';
+        if (borderBottom) borderBottom.classList.remove('invalid');
+      }
       return;
     }
-    // Only show commas, no decimals, while typing
+
+    // Format with commas (valid digits)
     el.value = numberWithCommas(raw, true);
+
+    // Custom validation for minimum amount
+    if (parseFloat(raw) < 500) {
+      el.classList.add('invalid');
+      if (nairaElem) nairaElem.classList.add('invalid');
+      if (errorElem) {
+        errorElem.textContent = 'Please enter a valid amount (min 500)';
+        errorElem.style.display = 'block';
+      }
+      if (borderBottom) borderBottom.classList.add('invalid');
+    } else {
+      el.classList.remove('invalid');
+      if (nairaElem) nairaElem.classList.remove('invalid');
+      if (errorElem) errorElem.style.display = 'none';
+      if (borderBottom) borderBottom.classList.remove('invalid');
+    }
   });
 
   // On blur, format with decimals
@@ -116,6 +157,10 @@ function initLiveFormatting(el: HTMLInputElement) {
     const raw = stripCommas(el.value);
     if (!raw || !/^\d+$/.test(raw)) {
       el.value = '';
+      el.classList.remove('invalid');
+      if (nairaElem) nairaElem.classList.remove('invalid');
+      if (errorElem) errorElem.style.display = 'none';
+      if (borderBottom) borderBottom.classList.remove('invalid');
       return;
     }
     el.value = numberWithCommas(raw, false);
@@ -203,6 +248,7 @@ function renderForm() {
           required
         />
       </div>
+     <span class="input-error-message" id="amount-error" style="display:none;">Please enter a valid amount (min 500)</span>
 
       <label for="loan-interest"> Annual Interest Rate </label>
       <div class="interest-wrapper">
@@ -215,6 +261,7 @@ function renderForm() {
           required
         />
       </div>
+      <span class="input-error-message" id="interest-error" style="display:none;">Please enter a valid interest rate</span>
 
       <label> Loan Term <span class="per-term">per/anum</span></label>
         <input
@@ -274,6 +321,11 @@ function renderForm() {
       monthsInput.placeholder = 'Enter loan term in';
     }
   });
+
+  const amountInput = document.querySelector('.js-loan-amount') as HTMLInputElement;
+  const amountError = document.getElementById('amount-error') as HTMLElement;
+  const nairaElem = document.querySelector('.naira-symbol') as HTMLElement;
+  initLiveFormatting(amountInput, amountError, nairaElem, amountInput);
 }
 
 // Render summary table

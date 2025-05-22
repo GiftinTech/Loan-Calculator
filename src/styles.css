@@ -159,11 +159,12 @@ label {
   padding-left: 18px;
 }
 
-.loan-input[type='number'],
+.loan-input,
 .amount-input {
   border-top: transparent;
   border-left: transparent;
   border-right: transparent;
+  border-bottom: 2px solid var(--MAIN-TEXT);
   background-color: var(--BACKGROUND);
   margin-top: 15px;
   width: 100%;
@@ -178,7 +179,6 @@ label {
 .loan-input:focus {
   outline: none;
   border: none;
-  border-bottom: 2px solid;
   box-shadow: none;
 }
 
@@ -234,6 +234,44 @@ input[type='date'] {
 .loan-input[type='number'] {
   appearance: textfield;
   -moz-appearance: textfield;
+}
+
+/* Red border for invalid input */
+.loan-input:focus:not(.invalid),
+.amount-input:focus:not(.invalid) {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid var(--PRIMARY);
+  box-shadow: none;
+}
+
+.loan-input.invalid,
+.amount-input.invalid,
+.loan-input.invalid:focus,
+.amount-input.invalid:focus {
+  border-bottom: 2px solid var(--ERROR) !important;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Red currency sign when input is invalid */
+.amount-wrapper .naira-symbol.invalid {
+  color: var(--ERROR) !important;
+}
+
+.input-error-message {
+  color: var(--ERROR);
+  font-size: 9px;
+  margin-top: 2px;
+  margin-bottom: 0;
+  padding-left: 2px;
+  display: block;
+}
+
+/* Remove error styles when valid */
+.loan-input:valid:not(.invalid),
+.amount-input:valid:not(.invalid) {
+  border-bottom: 2px solid var(--PRIMARY) !important;
 }
 
 /* Calculate loan button style */
