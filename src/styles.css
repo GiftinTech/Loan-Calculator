@@ -346,10 +346,14 @@ tr {
   height: auto;
 }
 
-.loan-schedule-table table {
-  overflow-x: scroll;
+.table-container {
+  overflow-x: auto;
+}
+
+.table-container table {
   min-width: 400px;
   border-collapse: collapse;
+  width: 100%;
 }
 
 /* Estimated pay-off and Current balance style */

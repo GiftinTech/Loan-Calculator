@@ -444,7 +444,8 @@ function renderScheduleTable() {
           <h2>Current Balance</h2>
           <p class="bal-p">—</p>
         </div>
-        <table>
+        <div class="table-container">
+          <table>
           <caption>Amortisation Schedule</caption>
           <thead>
             <tr class="schedule-th">
@@ -466,6 +467,7 @@ function renderScheduleTable() {
             </tr>
           </tfoot>
         </table>
+      </div>  
       </div>`;
   }
 
@@ -727,7 +729,7 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     renderSummaryTable();
     renderScheduleTable();
 
-    // Prepare chart details object
+    // Chart details object
     const chartDetails = {
       principal: loanResult.principal,
       totalInterest: loanResult.totalInterest,
@@ -793,13 +795,13 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 
   if (chartDetails && summaryResult && amortisationSchedule) {
-    // Push loaded data into your app's state/arrays
+    // Push loaded data into site's state/arrays
     summary.length = 0;
     summary.push(summaryResult);
     schedule.length = 0;
     schedule.push(...amortisationSchedule);
 
-    // Re-render tables/charts as needed
+    // Re-render tables/charts
     renderSummaryTable();
     renderScheduleTable();
 
