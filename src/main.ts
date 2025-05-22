@@ -673,10 +673,12 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     // Chart figures
     (
       document.querySelector('.js-loan-chart-amount') as HTMLDivElement
-    ).innerHTML = `<p>Loan Amount</p><span>&#8358;${numberWithCommas(loanResult.principal)}</span>`;
+    ).innerHTML = `<p>Loan Amount</p><span class="chart-amount-color">&#8358;${numberWithCommas(
+      loanResult.principal
+    )}</span>`;
     (
       document.querySelector('.js-total-chart-interest') as HTMLDivElement
-    ).innerHTML = `<p>Total Interest</p><span>&#8358;${numberWithCommas(
+    ).innerHTML = `<p>Total Interest</p><span class="chart-interest-color">&#8358;${numberWithCommas(
       loanResult.totalInterest
     )}</span>`;
     (
@@ -837,12 +839,12 @@ document.addEventListener('DOMContentLoaded', () => {
       // Re-render Chart details
       (
         document.querySelector('.js-loan-chart-amount') as HTMLDivElement
-      ).innerHTML = `<p>Loan Amount</p><span>&#8358;${numberWithCommas(
+      ).innerHTML = `<p>Loan Amount</p><span class="chart-amount-color">&#8358;${numberWithCommas(
         chartDetails.principal
       )}</span>`;
       (
         document.querySelector('.js-total-chart-interest') as HTMLDivElement
-      ).innerHTML = `<p>Total Interest</p><span>&#8358;${numberWithCommas(
+      ).innerHTML = `<p>Total Interest</p><span class="chart-interest-color">&#8358;${numberWithCommas(
         chartDetails.totalInterest
       )}</span>`;
       (
