@@ -726,8 +726,39 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
 
     renderSummaryTable();
     renderScheduleTable();
+
+    // Prepare chart details object
+    const chartDetails = {
+      principal: loanResult.principal,
+      totalInterest: loanResult.totalInterest,
+      totalPayment: loanResult.totalPayment,
+    };
+
+    // Save to localStorage
+    saveLoanResultsToLocalStorage(
+      chartDetails,
+      summary[0], // first (and only) summary entry
+      schedule // full amortisation schedule
+    );
   });
 };
+
+// Save results to localStorage
+function saveLoanResultsToLocalStorage(
+  chartDetails: { principal: number; totalInterest: number; totalPayment: number },
+  summaryResult: SummaryEntry,
+  amortisationSchedule: ScheduleEntry[]
+) {
+  // Clear previous results
+  localStorage.removeItem('loan_chart_details');
+  localStorage.removeItem('loan_summary_result');
+  localStorage.removeItem('loan_amortisation_schedule');
+
+  // Save new results
+  localStorage.setItem('loan_chart_details', JSON.stringify(chartDetails));
+  localStorage.setItem('loan_summary_result', JSON.stringify(summaryResult));
+  localStorage.setItem('loan_amortisation_schedule', JSON.stringify(amortisationSchedule));
+}
 
 // Render the data on the page
 document.addEventListener('DOMContentLoaded', () => {
@@ -753,4 +784,70 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('myChart') as HTMLCanvasElement;
 
   inputPreprocessing(canvas);
+
+  // Load from localStorage if available
+  const chartDetails = JSON.parse(localStorage.getItem('loan_chart_details') || 'null');
+  const summaryResult = JSON.parse(localStorage.getItem('loan_summary_result') || 'null');
+  const amortisationSchedule = JSON.parse(
+    localStorage.getItem('loan_amortisation_schedule') || 'null'
+  );
+
+  if (chartDetails && summaryResult && amortisationSchedule) {
+    // Push loaded data into your app's state/arrays
+    summary.length = 0;
+    summary.push(summaryResult);
+    schedule.length = 0;
+    schedule.push(...amortisationSchedule);
+
+    // Re-render tables/charts as needed
+    renderSummaryTable();
+    renderScheduleTable();
+
+    // Re-create Chart.js chart
+    if (myChart) {
+      myChart.destroy();
+    }
+    const canvas = document.getElementById('myChart') as HTMLCanvasElement;
+    if (canvas && chartDetails) {
+      myChart = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+          labels: ['Principal', 'Interest'],
+          datasets: [
+            {
+              label: '',
+              data: [chartDetails.principal, chartDetails.totalInterest],
+              borderWidth: 1,
+              backgroundColor: ['rgb(31, 52, 243)', 'rgb(247, 47, 91)'],
+              hoverOffset: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+          },
+          maintainAspectRatio: false,
+        },
+      });
+
+      // Re-render Chart details
+      (
+        document.querySelector('.js-loan-chart-amount') as HTMLDivElement
+      ).innerHTML = `<p>Loan Amount</p><span>&#8358;${numberWithCommas(
+        chartDetails.principal
+      )}</span>`;
+      (
+        document.querySelector('.js-total-chart-interest') as HTMLDivElement
+      ).innerHTML = `<p>Total Interest</p><span>&#8358;${numberWithCommas(
+        chartDetails.totalInterest
+      )}</span>`;
+      (
+        document.querySelector('.js-total-chart-payment') as HTMLDivElement
+      ).innerHTML = `<p>Total Payment</p><span>&#8358;${numberWithCommas(
+        chartDetails.totalPayment
+      )}</span>`;
+    }
+  }
 });
