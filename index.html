@@ -20,7 +20,15 @@
         <li class="js-calculate-nav">Calculate</li>
         <li class="js-loan-summary-nav">Loan Summary</li>
         <li class="js-loan-schedule-nav">Loan Schedule</li>
-        <li class="currency-choice">Currency</li>
+        <li class="currency-choice">
+          <select id="currency-select" class="currency-choice">
+            <option value="" disabled selected>Currency</option>
+            <option value="NGN">&#8358; Naira (NGN)</option>
+            <option value="USD">&#36; US Dollar (USD)</option>
+            <option value="EUR">&euro; Euro (EUR)</option>
+            <option value="GBP">&pound; British Pound (GBP)</option>
+          </select>
+        </li>
       </ul>
       <div class="loan-details-wrapper">
         <div class="js-form-placeholder"></div>

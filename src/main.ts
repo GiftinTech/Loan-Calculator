@@ -72,7 +72,70 @@ interface ScheduleEntry {
 }
 const schedule: ScheduleEntry[] = [];
 
-// Utility function: formats figures with commas
+// Utility function:
+// Currency selection
+const currencySymbols: Record<string, string> = {
+  NGN: '&#8358;', // Naira
+  USD: '&#36;', // Dollar
+  EUR: '&euro;', // Euro
+  GBP: '&pound;', // Pound
+};
+
+// Currency converter
+const currencySelect = document.getElementById('currency-select') as HTMLSelectElement;
+
+let currentCurrency = 'NGN'; // Default
+
+currencySelect?.addEventListener('change', (e) => {
+  currentCurrency = (e.target as HTMLSelectElement).value;
+  // Save currency choice to localStorage
+  localStorage.setItem('selected_currency', currentCurrency);
+
+  // Re-render all UI sections that use the currency symbol
+  renderForm();
+  renderSummaryTable();
+  renderScheduleTable();
+
+  // Re-query and re-attach nav logic after render
+  const formElement = document.querySelector('.js-form-placeholder form') as HTMLElement;
+  const summaryTable = document.querySelector('.js-summary-placeholder div') as HTMLElement;
+  const scheduleTable = document.querySelector('.js-schedule-placeholder div') as HTMLElement;
+
+  const loanSummaryNav = document.querySelector('.js-loan-summary-nav') as HTMLLIElement;
+  const calculateLoanNav = document.querySelector('.js-calculate-nav') as HTMLLIElement;
+  const loanScheduleNav = document.querySelector('.js-loan-schedule-nav') as HTMLLIElement;
+
+  toggleNavLink(loanSummaryNav, summaryTable, formElement, scheduleTable);
+  toggleNavLink(calculateLoanNav, formElement, summaryTable, scheduleTable);
+  toggleNavLink(loanScheduleNav, scheduleTable, formElement, summaryTable);
+
+  // Render chart
+  const chartDetails = JSON.parse(localStorage.getItem('loan_chart_details') || 'null');
+  if (chartDetails && myChart) {
+    // Update chart labels and data
+    myChart.data.datasets[0].data = [chartDetails.principal, chartDetails.totalInterest];
+    myChart.update();
+
+    // Update chart details HTML
+    (
+      document.querySelector('.js-loan-chart-amount') as HTMLDivElement
+    ).innerHTML = `<p>Loan Amount</p><span class="chart-amount-color">${
+      currencySymbols[currentCurrency]
+    }${numberWithCommas(chartDetails.principal)}</span>`;
+    (
+      document.querySelector('.js-total-chart-interest') as HTMLDivElement
+    ).innerHTML = `<p>Total Interest</p><span class="chart-interest-color">${
+      currencySymbols[currentCurrency]
+    }${numberWithCommas(chartDetails.totalInterest)}</span>`;
+    (
+      document.querySelector('.js-total-chart-payment') as HTMLDivElement
+    ).innerHTML = `<p>Total Payment</p><span>${currencySymbols[currentCurrency]}${numberWithCommas(
+      chartDetails.totalPayment
+    )}</span>`;
+  }
+});
+
+// formats figures with commas
 /** remove every comma before calculations */
 export const stripCommas = (val: string) => val.replace(/,/g, '');
 
@@ -244,7 +307,7 @@ function renderForm() {
 
       <label for="loan-amount"> Loan Amount </label>
       <div class="amount-wrapper">
-        <span class="naira-symbol">&#8358;</span>
+        <span class="naira-symbol">${currencySymbols[currentCurrency]}</span>
         <input
           type="text"
           id="loan-amount"
@@ -367,10 +430,22 @@ function renderSummaryTable() {
 
   const e = summary[0];
   const summaryFields = [
-    { label: 'Monthly Repayment', value: `&#8358;${numberWithCommas(e.monthlyPayment)}` },
-    { label: 'Total Loan Payment', value: `&#8358;${numberWithCommas(e.totalPayment)}` },
-    { label: 'Loan Amount', value: `&#8358;${numberWithCommas(e.principal)}` },
-    { label: 'Total Interest', value: `&#8358;${numberWithCommas(e.totalInterest)}` },
+    {
+      label: 'Monthly Repayment',
+      value: `${currencySymbols[currentCurrency]}${numberWithCommas(e.monthlyPayment)}`,
+    },
+    {
+      label: 'Total Loan Payment',
+      value: `${currencySymbols[currentCurrency]}${numberWithCommas(e.totalPayment)}`,
+    },
+    {
+      label: 'Loan Amount',
+      value: `${currencySymbols[currentCurrency]}${numberWithCommas(e.principal)}`,
+    },
+    {
+      label: 'Total Interest',
+      value: `${currencySymbols[currentCurrency]}${numberWithCommas(e.totalInterest)}`,
+    },
     {
       label: 'Number of Installments',
       value: numberWithCommas(e.calculatedYears * 12 + e.calculatedMonths),
@@ -488,10 +563,10 @@ function renderScheduleTable() {
         return `
           <tr class="${rowClass}">
             <td>${dayjs(e.date).format('D/M/YYYY')}</td>
-            <td>&#8358;${numberWithCommas(e.monthlyPayment)}</td>
-            <td>&#8358;${numberWithCommas(e.interest)}</td>
-            <td>&#8358;${numberWithCommas(e.principal)}</td>
-            <td>&#8358;${numberWithCommas(e.balance)}</td>
+            <td>${currencySymbols[currentCurrency]}${numberWithCommas(e.monthlyPayment)}</td>
+            <td>${currencySymbols[currentCurrency]}${numberWithCommas(e.interest)}</td>
+            <td>${currencySymbols[currentCurrency]}${numberWithCommas(e.principal)}</td>
+            <td>${currencySymbols[currentCurrency]}${numberWithCommas(e.balance)}</td>
           </tr>`;
       })
       .join('');
@@ -514,10 +589,14 @@ function renderScheduleTable() {
   const balElem = document.querySelector('.estimated-payoff .bal-p') as HTMLElement | null;
   if (balElem) {
     if (currentEntry) {
-      balElem.innerHTML = `&#8358;${numberWithCommas(currentEntry.balance)}`;
+      balElem.innerHTML = `${currencySymbols[currentCurrency]}${numberWithCommas(
+        currentEntry.balance
+      )}`;
     } else if (schedule.length) {
       // Show last balance if no current month payment
-      balElem.innerHTML = `&#8358;${numberWithCommas(schedule[schedule.length - 1].balance)}`;
+      balElem.innerHTML = `${currencySymbols[currentCurrency]}${numberWithCommas(
+        schedule[schedule.length - 1].balance
+      )}`;
     } else {
       balElem.textContent = '—';
     }
@@ -673,17 +752,17 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     // Chart figures
     (
       document.querySelector('.js-loan-chart-amount') as HTMLDivElement
-    ).innerHTML = `<p>Loan Amount</p><span class="chart-amount-color">&#8358;${numberWithCommas(
-      loanResult.principal
-    )}</span>`;
+    ).innerHTML = `<p>Loan Amount</p><span class="chart-amount-color">${
+      currencySymbols[currentCurrency]
+    }${numberWithCommas(loanResult.principal)}</span>`;
     (
       document.querySelector('.js-total-chart-interest') as HTMLDivElement
-    ).innerHTML = `<p>Total Interest</p><span class="chart-interest-color">&#8358;${numberWithCommas(
-      loanResult.totalInterest
-    )}</span>`;
+    ).innerHTML = `<p>Total Interest</p><span class="chart-interest-color">${
+      currencySymbols[currentCurrency]
+    }${numberWithCommas(loanResult.totalInterest)}</span>`;
     (
       document.querySelector('.js-total-chart-payment') as HTMLDivElement
-    ).innerHTML = `<p>Total Payment</p><span>&#8358;${numberWithCommas(
+    ).innerHTML = `<p>Total Payment</p><span>${currencySymbols[currentCurrency]}${numberWithCommas(
       loanResult.totalPayment
     )}</span>`;
 
@@ -766,6 +845,12 @@ function saveLoanResultsToLocalStorage(
 
 // Render the data on the page
 document.addEventListener('DOMContentLoaded', () => {
+  const savedCurrency = localStorage.getItem('selected_currency');
+  if (savedCurrency && currencySymbols[savedCurrency]) {
+    currentCurrency = savedCurrency;
+    if (currencySelect) currencySelect.value = savedCurrency;
+  }
+
   // Render content first
   renderForm();
   renderSummaryTable();
@@ -839,19 +924,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Re-render Chart details
       (
         document.querySelector('.js-loan-chart-amount') as HTMLDivElement
-      ).innerHTML = `<p>Loan Amount</p><span class="chart-amount-color">&#8358;${numberWithCommas(
-        chartDetails.principal
-      )}</span>`;
+      ).innerHTML = `<p>Loan Amount</p><span class="chart-amount-color">${
+        currencySymbols[currentCurrency]
+      }${numberWithCommas(chartDetails.principal)}</span>`;
       (
         document.querySelector('.js-total-chart-interest') as HTMLDivElement
-      ).innerHTML = `<p>Total Interest</p><span class="chart-interest-color">&#8358;${numberWithCommas(
-        chartDetails.totalInterest
-      )}</span>`;
+      ).innerHTML = `<p>Total Interest</p><span class="chart-interest-color">${
+        currencySymbols[currentCurrency]
+      }${numberWithCommas(chartDetails.totalInterest)}</span>`;
       (
         document.querySelector('.js-total-chart-payment') as HTMLDivElement
-      ).innerHTML = `<p>Total Payment</p><span>&#8358;${numberWithCommas(
-        chartDetails.totalPayment
-      )}</span>`;
+      ).innerHTML = `<p>Total Payment</p><span>${
+        currencySymbols[currentCurrency]
+      }${numberWithCommas(chartDetails.totalPayment)}</span>`;
     }
   }
 });

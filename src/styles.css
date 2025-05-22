@@ -83,13 +83,20 @@ body {
 }
 
 .currency-choice {
-  color: whitesmoke !important;
+  font-size: 10px;
+  color: #000 !important;
   font-weight: 500;
   border: none;
   border-radius: 6px;
-  background-color: #000;
-  padding: 4px 6px;
-  margin-left: 16px;
+  background: var(--BACKGROUND, #fff);
+  margin-left: auto;
+  width: 60px;
+  cursor: pointer;
+}
+.currency-choice:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
 }
 
 /* Form style */
@@ -505,7 +512,7 @@ tr {
 /* MOBILE BREAKPOINTS */
 @media (min-width: 360px) {
   .nav-links {
-    gap: 10px;
+    gap: 15px;
   }
   .nav-links li {
     font-size: 11px;
@@ -532,19 +539,14 @@ tr {
 }
 
 @media (min-width: 390px) {
-  .currency-choice {
-    margin-left: 50px;
-  }
-
   .chart-details {
     gap: 140px;
   }
 }
 @media (min-width: 412px) {
-  .currency-choice {
-    margin-left: 70px;
+  .nav-links {
+    gap: 25px;
   }
-
   .chart-details {
     gap: 170px;
   }
@@ -558,10 +560,6 @@ tr {
 
   .nav-links {
     gap: 30px;
-  }
-
-  .currency-choice {
-    margin-left: 180px;
   }
 
   .loan-details-wrapper {
@@ -617,10 +615,6 @@ tr {
   .loan-wrapper {
     margin-top: 150px;
     width: 90%;
-  }
-
-  .currency-choice {
-    margin-left: auto;
   }
 
   form {
