@@ -22,7 +22,7 @@ This is a simple web-based loan calculator built with **HTML**, **CSS**, **JavaS
 
 ## 🚀 Live Demo
 
-[🔗 View Live Project](https://your-github-username.github.io/loan-calculator) <!-- Replace with your link -->
+[🔗 View Live Project](https://loan-calculator-five-zeta.vercel.app/) <!-- Replace with your link -->
 
 ---
 
@@ -98,8 +98,8 @@ npm run dev
 
 - ✅ Add Chart.js for better chart visuals
 - ✅ Input validation and error messages
-- ⏳ Save past calculations using localStorage
-- ⏳ Add dark mode toggle
+- ✅ Save past calculations using localStorage
+- ✅ Add dark mode toggle
 
 ---
 

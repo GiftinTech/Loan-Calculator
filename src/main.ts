@@ -155,7 +155,7 @@ function initLiveFormatting(
   // On blur, format with decimals
   el.addEventListener('blur', () => {
     const raw = stripCommas(el.value);
-    if (!raw || !/^\d+$/.test(raw)) {
+    if (!raw) {
       el.value = '';
       el.classList.remove('invalid');
       if (nairaElem) nairaElem.classList.remove('invalid');
@@ -163,6 +163,11 @@ function initLiveFormatting(
       if (borderBottom) borderBottom.classList.remove('invalid');
       return;
     }
+
+    if (!/^\d+$/.test(raw) || parseFloat(raw) < 500) {
+      return;
+    }
+
     el.value = numberWithCommas(raw, false);
   });
 }
