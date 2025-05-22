@@ -302,7 +302,7 @@ const toggleNavLink = (
 
 function renderForm() {
   const formHTML = `
-    <form action="https://httpbin.org/get" method="get" name="loanDetailsForm">
+    <form name="loanDetailsForm">
       <label class="form-header">Calculate loan interest</label>
 
       <label for="loan-amount"> Loan Amount </label>
@@ -323,6 +323,7 @@ function renderForm() {
         <span class="percentage-symbol">%</span>
         <input
           type="number"
+          step="any"
           id="loan-interest"
           class="loan-input js-loan-interest"
           placeholder="Enter loan Interest"

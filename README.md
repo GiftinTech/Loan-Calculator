@@ -1,57 +1,81 @@
 # 💰 Simple Loan Calculator with Amortisation Chart
 
-This is a simple web-based loan calculator built with **HTML**, **CSS**, **JavaScript** and **TypeScript**. It calculates monthly loan payments based on user input and visualises the **amortisation schedule**—showing how your payments are split between **interest** and **principal** over time.
+This is a simple web-based loan calculator built with **HTML**, **CSS**, **JavaScript** and **TypeScript**. It helps users estimate monthly repayments, total interest and payment schedules for various currencies, and visualises the **amortisation schedule**—showing how your payments are split between **interest** and **principal** over time.
 
 ---
 
 ## ✨ Features
 
-- 🧮 Monthly loan repayment calculator
-- 📈 Dynamic amortisation chart using `<canvas>`
-- 🧠 Breaks down each payment into interest and principal
-- 🪶 Lightweight and beginner-friendly (no frameworks)
-- 📱 Responsive layout
+- **Multi-currency Support:**  
+  Supports Naira (₦), US Dollar ($), Euro (€), and British Pound (£). User’s last selected currency is remembered.
+
+- **Loan Calculation:**  
+  Calculates monthly repayment, total payment, total interest, and generates an amortisation schedule.
+
+- **Flexible Loan Term Input:**  
+  Users can specify loan term in either years or months (not both). Real-time validation ensures only one is filled.
+
+- **Real-time Validation:**
+
+  - Loan amount must be a number and at least 500.
+  - Interest rate must be a positive number.
+  - Loan term validation with error messages and red border highlights.
+  - Start date is required.
+
+- **Interactive UI:**
+
+  - Keyboard navigation between fields.
+  - Responsive design with horizontal scroll for tables on small screens.
+  - Navigation tabs for Calculate, Loan Summary, and Loan Schedule.
+
+- **Charts & Visuals:**
+
+  - Doughnut chart visualizes principal vs. interest.
+  - Chart details update with selected currency.
+
+- **Data Persistence:**
+
+  - Last calculation (summary, schedule, chart) is saved in localStorage and restored on reload.
+  - User’s currency choice is saved and restored.
+
+- **CSV Export:**
+  - Download loan summary and amortisation schedule as CSV files.
 
 ---
 
-## 🖼 Preview
+## Usage
 
-![Loan Calculator Screenshot](screenshot.png) <!-- Add your screenshot here -->
+1. **Select Currency:**  
+   Choose your preferred currency from the dropdown.
 
----
+2. **Enter Loan Details:**
 
-## 🚀 Live Demo
+   - Loan Amount (min 500)
+   - Annual Interest Rate (%)
+   - Loan Term (years **or** months)
+   - Start Date
 
-[🔗 View Live Project](https://loan-calculator-five-zeta.vercel.app/) <!-- Replace with your link -->
+3. **Calculate:**  
+   Click "Calculate" to view results.
+
+4. **View Results:**
+
+   - **Loan Summary:** See payment breakdown and important dates.
+   - **Loan Schedule:** View amortisation table (with horizontal scroll on mobile).
+   - **Chart:** Visual breakdown of principal vs. interest.
+
+5. **Export:**  
+   Download summary or schedule as CSV.
 
 ---
 
 ## 🛠 Tech Stack
 
-- **HTML5** – structure
-- **CSS3** – styling
-- **TypeScript** – logic
-- **Vite** – development/build tool
-- **Vitest** – unit testing framework
-- **Chart.js** – for improved chart visuals
-
----
-
-## 📌 How It Works
-
-1. User inputs:
-
-   - Loan Amount (₦)
-   - Interest Rate (% annual)
-   - Loan Term (Years)
-
-2. The app:
-   - Calculates the **monthly repayment**
-   - Computes **total repayment** and **total interest**
-   - Builds a month-by-month amortisation breakdown
-   - Plots a line chart showing:
-     - Interest declining over time
-     - Principal increasing
+- **TypeScript**
+- **Vite & Vitest**
+- **Chart.js**
+- **Day.js**
+- **HTML5 & CSS3**
 
 ---
 
@@ -77,9 +101,29 @@ Loan Calculator App/
 ├── tsconfig.json
 ├── vite.config.ts
 
-
-
 ```
+
+---
+
+## Improvements & Future Features
+
+- Add more currencies and currency formatting
+- Add dark mode/theme switcher
+- Support for extra payments or lump sums
+- Improved accessibility and mobile UX
+- More detailed error messages and tooltips
+
+---
+
+## 🖼 Preview
+
+![Loan Calculator Screenshot](screenshot.png) <!-- Add your screenshot here -->
+
+---
+
+## 🚀 Live Demo
+
+[🔗 View Live Project](https://loan-calculator-five-zeta.vercel.app/) <!-- Replace with your link -->
 
 ---
 
@@ -94,18 +138,9 @@ npm run dev
 
 ---
 
-## 💡 Future Improvements
-
-- ✅ Add Chart.js for better chart visuals
-- ✅ Input validation and error messages
-- ✅ Save past calculations using localStorage
-- ✅ Add dark mode toggle
-
----
-
 ## 🤝 Contributing
 
-Pull requests are welcome! Feel free to fork and submit a PR if you have suggestions or improvements.
+_This project is a work in progress. Contributions and suggestions are welcome!_ Feel free to fork and submit a PR if you have suggestions or improvements.
 
 ---
 
