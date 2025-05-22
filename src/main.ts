@@ -190,7 +190,6 @@ const toggleNavLink = (
 function renderForm() {
   const formHTML = `
     <form action="https://httpbin.org/get" method="get" name="loanDetailsForm">
-     <div class="currency-choice">Currency</div>
       <label class="form-header">Calculate loan interest</label>
 
       <label for="loan-amount"> Loan Amount </label>
@@ -224,7 +223,7 @@ function renderForm() {
           class="loan-input js-loan-term-years"
           placeholder="Enter loan term in"
         />
-
+      <div class="optional-term">OR</div>
       <label> Loan Term <span class="per-term">per/month</span></label>
         <input
           type="number"
