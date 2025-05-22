@@ -329,7 +329,6 @@ function renderForm() {
           required
         />
       </div>
-      <span class="input-error-message" id="interest-error" style="display:none;">Please enter a valid interest rate</span>
 
       <label> Loan Term <span class="per-term">per/anum</span></label>
         <input
@@ -338,7 +337,9 @@ function renderForm() {
           class="loan-input js-loan-term-years"
           placeholder="Enter loan term in"
         />
+
       <div class="optional-term">OR</div>
+
       <label> Loan Term <span class="per-term">per/month</span></label>
         <input
           type="number"
@@ -346,7 +347,8 @@ function renderForm() {
           class="loan-input js-loan-term-month"
           placeholder="Enter loan term in"
         />
-      
+      <span class="input-error-message" id="term-error" style="display:none;">Please fill only one loan term (years or months)</span>
+
       <label for="start-date"> Start Date </label>
       <input type="date" class="loan-input loan-start-date js-loan-start-date" />
 
@@ -362,6 +364,7 @@ function renderForm() {
   // --- Auto input rendering logic ---
   const yearsInput = document.querySelector('.js-loan-term-years') as HTMLInputElement;
   const monthsInput = document.querySelector('.js-loan-term-month') as HTMLInputElement;
+  const termError = document.getElementById('term-error') as HTMLElement;
 
   // When months is filled, show equivalent years as placeholder in years input
   monthsInput.addEventListener('input', () => {
@@ -389,6 +392,28 @@ function renderForm() {
       monthsInput.placeholder = 'Enter loan term in';
     }
   });
+
+  // Real-time validation for loan term fields
+  function setTermError(show: boolean) {
+    if (show) {
+      yearsInput.classList.add('invalid');
+      monthsInput.classList.add('invalid');
+      termError.style.display = 'block';
+    } else {
+      yearsInput.classList.remove('invalid');
+      monthsInput.classList.remove('invalid');
+      termError.style.display = 'none';
+    }
+  }
+
+  function checkTermInputs() {
+    const years = parseInt(yearsInput.value, 10);
+    const months = parseInt(monthsInput.value, 10);
+    setTermError(!isNaN(years) && years > 0 && !isNaN(months) && months > 0);
+  }
+
+  yearsInput.addEventListener('input', checkTermInputs);
+  monthsInput.addEventListener('input', checkTermInputs);
 
   const amountInput = document.querySelector('.js-loan-amount') as HTMLInputElement;
   const amountError = document.getElementById('amount-error') as HTMLElement;
@@ -718,6 +743,24 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
       loanDetails.interestRate > 0 &&
       onlyOneTerm &&
       loanDetails.startDate !== '';
+
+    const termError = form.querySelector('#term-error') as HTMLElement;
+    function setTermError(show: boolean) {
+      if (show) {
+        yearsInput.classList.add('invalid');
+        monthsInput.classList.add('invalid');
+        termError.style.display = 'block';
+      } else {
+        yearsInput.classList.remove('invalid');
+        monthsInput.classList.remove('invalid');
+        termError.style.display = 'none';
+      }
+    }
+    if (!onlyOneTerm) {
+      setTermError(true);
+    } else {
+      setTermError(false);
+    }
 
     if (!isValidInput) return;
 
