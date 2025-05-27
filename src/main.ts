@@ -186,7 +186,7 @@ function initLiveFormatting(
         }
       }
       // After filtering, check if the new value is valid
-      if (digitsOnly && parseFloat(digitsOnly) >= 500) {
+      if (digitsOnly && parseFloat(digitsOnly) >= 1000) {
         el.classList.remove('invalid');
         if (nairaElem) nairaElem.classList.remove('invalid');
         if (errorElem) errorElem.style.display = 'none';
@@ -199,11 +199,11 @@ function initLiveFormatting(
     el.value = numberWithCommas(raw, true);
 
     // Custom validation for minimum amount
-    if (parseFloat(raw) < 500) {
+    if (parseFloat(raw) < 1000) {
       el.classList.add('invalid');
       if (nairaElem) nairaElem.classList.add('invalid');
       if (errorElem) {
-        errorElem.textContent = 'Please enter a valid amount (min 500)';
+        errorElem.textContent = 'Please enter a valid amount (min 1000)';
         errorElem.style.display = 'block';
       }
       if (borderBottom) borderBottom.classList.add('invalid');
@@ -227,7 +227,7 @@ function initLiveFormatting(
       return;
     }
 
-    if (!/^\d+$/.test(raw) || parseFloat(raw) < 500) {
+    if (!/^\d+$/.test(raw) || parseFloat(raw) < 1000) {
       return;
     }
 
@@ -316,7 +316,7 @@ function renderForm() {
           required
         />
       </div>
-     <span class="input-error-message" id="amount-error" style="display:none;">Please enter a valid amount (min 500)</span>
+     <span class="input-error-message" id="amount-error" style="display:none;">Please enter a valid amount (min 1000)</span>
 
       <label for="loan-interest"> Annual Interest Rate </label>
       <div class="interest-wrapper">
@@ -739,7 +739,7 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
       (months && months > 0 && (!years || years === 0));
     const isValidInput =
       !isNaN(loanDetails.amount) &&
-      loanDetails.amount >= 500 &&
+      loanDetails.amount >= 1000 &&
       !isNaN(loanDetails.interestRate) &&
       loanDetails.interestRate > 0 &&
       onlyOneTerm &&
@@ -816,22 +816,7 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
     );
 
     // Summary and Schedule
-    summary.length = 0;
     schedule.length = 0;
-
-    summary.push({
-      monthlyPayment: +loanResult.monthlyPayment.toFixed(2),
-      totalPayment: +loanResult.totalPayment.toFixed(2),
-      principal: +loanResult.principal.toFixed(2),
-      totalInterest: +loanResult.totalInterest.toFixed(2),
-      installmentNum: loanResult.calculatedYears * 12 + loanResult.calculatedMonths,
-      interestRate: +loanResult.interest.toFixed(2),
-      calculatedYears: loanResult.calculatedYears,
-      calculatedMonths: loanResult.calculatedMonths,
-      start: loanResult.start,
-      last: loanResult.last,
-    });
-
     const totalMonths = loanResult.calculatedYears * 12 + loanResult.calculatedMonths;
     let balance = loanResult.principal;
     const formatStartDate = dayjs(loanResult.start);
@@ -850,6 +835,23 @@ export const inputPreprocessing = (ctx: HTMLCanvasElement) => {
         balance: balance > 0 ? balance : 0,
       });
     }
+
+    const lastPaymentDate = schedule.length ? new Date(schedule.at(-1)!.date) : loanResult.last;
+    const installmentNum = schedule.length;
+
+    summary.length = 0;
+    summary.push({
+      monthlyPayment: +loanResult.monthlyPayment.toFixed(2),
+      totalPayment: +loanResult.totalPayment.toFixed(2),
+      principal: +loanResult.principal.toFixed(2),
+      totalInterest: +loanResult.totalInterest.toFixed(2),
+      installmentNum, // use schedule.length
+      interestRate: +loanResult.interest.toFixed(2),
+      calculatedYears: loanResult.calculatedYears,
+      calculatedMonths: loanResult.calculatedMonths,
+      start: loanResult.start,
+      last: lastPaymentDate,
+    });
 
     renderSummaryTable();
     renderScheduleTable();
