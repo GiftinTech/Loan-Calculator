@@ -578,7 +578,7 @@ function renderScheduleTable() {
     return (showAll ? schedule : schedule.slice(0, max_rows))
       .map((e) => {
         let rowClass = '';
-        if (!foundCurrent && dayjs(e.date).isAfter(today, 'month')) {
+        if (!foundCurrent && dayjs(e.date).isSame(today, 'month')) {
           rowClass = 'current-payment';
           foundCurrent = true;
         } else if (dayjs(e.date).isBefore(today, 'month')) {
